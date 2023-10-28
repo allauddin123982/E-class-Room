@@ -1,20 +1,27 @@
 [
     {
-        "title":"Home"
+        "title":"Home",
+        "idd":"home"
+        
     },
     {
-        "title":"Today Classes"
+        "title":"Today Classes",
+        "idd":"classes"
     },
     {
-        "title":"Time Table"
+        "title":"Time Table",
+        "idd":"timeTable"
     },
     {
-        "title":"Join Class"
+        "title":"Join Class",
+        "idd":"joinClass"
     },
     {
-        "title":"Joined Classes"
+        "title":"Joined Classes",
+        "idd":"joindClasses"
     },
     {
-        "title":"Chat"
+        "title":"Chat",
+        "idd":"chat"
     }
 ]

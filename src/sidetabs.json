@@ -1,0 +1,22 @@
+[
+    {
+        "title":"Home"
+        
+    },
+    {
+        "title":"Today Classes",
+        "idd":"classes"
+    },
+    {
+        "title":"Time Table"
+    },
+    {
+        "title":"Join Class"
+    },
+    {
+        "title":"Joined Classes"
+    },
+    {
+        "title":"Chat"
+    }
+]
