@@ -1,16 +1,21 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Auth } from "./Pages/auth/SignIn";
-import { Home } from "./Pages/loggedin/index";
-
+import LogIn from "./Components/Login/LogIn";
+import SignUp from "./Components/SignUp/SignUp";
+import TeacherDashBoard from "./Components/Teacher/TeacherDashBoard";
+import StudentDashBoard from "./Components/Student/StudentDashBoard";
 function App() {
+ 
   return (
     <>
       <div className="App">
+ 
         <Router>
           <Routes>
-            <Route path="/" exact element={<Auth />} />
-            <Route path="/loggedin" element={<Home />} />
+            <Route path="/" element={<SignUp />} />
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/studentDashboard" element={<StudentDashBoard />} />
+            <Route path="/teacherDashboard" element={<TeacherDashBoard />} />
           </Routes>
         </Router>
       </div>
