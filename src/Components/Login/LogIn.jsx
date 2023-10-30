@@ -27,8 +27,10 @@ const LogIn = () => {
         const role = user.displayName;
         if (role === "student") {
           navigate("/studentDashboard");
-        } else {
+        } else if (role === "teacher") {
           navigate("/teacherDashboard");
+        }else{
+          setError(res.err.message);
         }
       })
       .catch((err) => {
