@@ -9,18 +9,14 @@ import TimeTable from "./TimeTable";
 import JoinedClass from "./JoinedClass";
 import Chat from "./Chat";
 import Home from "./Home";
-import UpdateStudentProfile from "./UpdateStudentProfile";
 import StudentProfile from "./StudentProfile";
-// import { useGetUserInfo } from '../../hooks/useGetUserInfo'
 
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  console.log({ titleName });
-  
+
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -28,9 +24,11 @@ const StudentDashBoard = () => {
       } else {
         setUserName(null);
       }
+      console.log(userName)
+
     });
   }, []);
-  
+
   const signUserOut = async () => {
     try {
       await signOut(auth);
@@ -45,23 +43,15 @@ const StudentDashBoard = () => {
   const handleTab = (item) => {
     setTitleName(item.idd);
   };
-  // const handleProfileFalse = () => {
-  //   setProfile(false)
-  // }
   return (
     <>
-      <div className="z-[-1] header bg-gray-200 w-full h-14 flex items-center  ">
-        <p className=" w-[50%]">
+      <div className="z-[-1] header bg-gray-200 w-full h-14 flex justify-between items-center  ">
+        <p className="w-[50%]">
           {userName ? <p>Welcome {userName}</p> : null}
         </p>
+
         <button
-          className="w-[50%] text-right pe-10 "
-          onClick={() => setOpenModal(true)}
-        >
-          Update Profile
-        </button>
-        <button
-          className="w-[50%] text-right pe-10 "
+          className="me-20"
           onClick={() => setProfile(!profile)}
         >
           Profile
@@ -78,8 +68,8 @@ const StudentDashBoard = () => {
               <li
                 key={index}
                 onClick={() => {
-                  handleTab(item)
-                  setProfile(false)
+                  handleTab(item);
+                  setProfile(false);
                 }}
               >
                 <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
@@ -98,29 +88,20 @@ const StudentDashBoard = () => {
         </div>
       </aside>
       <div>
-        <UpdateStudentProfile
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-        />
-        {profile ? (
-          <StudentProfile/>
-          ) :null}
-        {
-          titleName === "home" && profile === false ? (
-            <Home />
-          ) : titleName === "classes" && profile === false ? (
-            <TodayClasses />
-          ) : titleName === "timeTable" && profile === false ? (
-            <TimeTable />
-          ) : titleName === "joinClass" && profile === false ? (
-            <ClassJoin />
-          ) : titleName === "joindClasses" && profile === false ? (
-            <JoinedClass />
-          ) : titleName === "chat" && profile === false ? (
-            <Chat />
-          ) : null
-        }
-        
+        {profile ? <StudentProfile /> : null}
+        {titleName === "home" && profile === false ? (
+          <Home />
+        ) : titleName === "classes" && profile === false ? (
+          <TodayClasses />
+        ) : titleName === "timeTable" && profile === false ? (
+          <TimeTable />
+        ) : titleName === "joinClass" && profile === false ? (
+          <ClassJoin />
+        ) : titleName === "joindClasses" && profile === false ? (
+          <JoinedClass />
+        ) : titleName === "chat" && profile === false ? (
+          <Chat />
+        ) : null}
       </div>
     </>
   );

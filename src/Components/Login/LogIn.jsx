@@ -24,6 +24,7 @@ const LogIn = () => {
       .then(async (res) => {
         setSubmitButtonDisabled(false);
         const user = res.user;
+        console.log("Helo login ",user)
         const role = user.displayName;
         if (role === "student") {
           navigate("/studentDashboard");
