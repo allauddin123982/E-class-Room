@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from "react";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useGetstdInfo } from "../../hooks/useGetstdInfo";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
 
 const UpdateStudentProfile = ({ open, onClose }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
+  const [isDataStored, setIsDataStored] = useState(false);
   const { fetchData } = useGetstdInfo();
+
+  useEffect(() => {
+    if (fetchData) {
+      // Data is already stored for this user
+      setData(fetchData); // Set the initial form data to the fetched data
+      setIsDataStored(true);
+    }
+  }, [fetchData]);
 
   useEffect(() => {
     const uploadFile = () => {
@@ -58,47 +66,20 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     setData({ ...data, [id]: value });
   };
 
-  const handleUpdate = async (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
+
     try {
-      const studentNameToUpdate = fetchData.length > 0 ? fetchData[0].reg : "";
-
-      // Query the Firestore collection to find the document with the matching name
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "studentdata"),
-          where("reg", "==", studentNameToUpdate)
-        )
-      );
-
-      // Check if a matching document was found
-      if (!querySnapshot.empty) {
-        // Get the first matching document (assuming names are unique)
-        const studentDoc = querySnapshot.docs[0];
-
-        // Get the document ID
-        const studentId = studentDoc.id;
-
-        // Define the data you want to update
-        const updatedData = {
+      console.log(data);
+      const res = await addDoc(collection(db, "studentdata"), {
         ...data,
-        };
-
-        // Update the document with the new data
-        await updateDoc(doc(db, "studentdata", studentId), updatedData);
-
-        // Optionally, you can clear the form fields or perform any other actions after a successful update.
-        setData({
-          namee: "",
-          reg: "",
-          sem: "",
-        });
-
-        // Close the modal or perform any other necessary actions
-        onClose();
-      } else {
-        console.log("No matching document found.");
-      }
+        timeStamp: serverTimestamp(),
+      });
+      setData({
+        namee: "",
+        reg: "",
+        sem: "",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -132,8 +113,8 @@ const UpdateStudentProfile = ({ open, onClose }) => {
               x
             </p>
             <div className="border mt-3 bg-gray-100  w-[350px] ">
-              <h1 className="text-2xl">Update Profile</h1>
-              <form className="p-2" onSubmit={handleUpdate}>
+              <h1 className="text-2xl">Add Profile</h1>
+              <form className="p-2" onSubmit={handleAdd}>
                 <div className="mt-2 flex flex-col items-start">
                   <p htmlFor="Name" className="">
                     Name
