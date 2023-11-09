@@ -10,12 +10,14 @@ import JoinedClass from "./JoinedClass";
 import Chat from "./Chat";
 import Home from "./Home";
 import StudentProfile from "./StudentProfile";
+import { useGetstdInfo } from "../../hooks/useGetstdInfo";
 
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
+  const { fetchData } = useGetstdInfo();
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -24,11 +26,21 @@ const StudentDashBoard = () => {
       } else {
         setUserName(null);
       }
-      console.log(userName)
-
+      console.log(userName);
     });
   }, []);
 
+  let imgSrc = ""; // Define imgSrc in the outer scope
+  
+  if (fetchData && fetchData.length > 0) {
+    const userProfile = fetchData[0];
+
+    if (userProfile && userProfile.img && userProfile.namee) {
+      imgSrc = userProfile.img;
+    } else {
+      console.log("no img extracted");
+    }
+  }
   const signUserOut = async () => {
     try {
       await signOut(auth);
@@ -46,16 +58,23 @@ const StudentDashBoard = () => {
   return (
     <>
       <div className="z-[-1] header bg-gray-200 w-full h-14 flex justify-between items-center  ">
-        <p className="w-[50%]">
-          {userName ? <p>Welcome {userName}</p> : null}
-        </p>
+        {userName ? (
+          <p className="ms-64 font-serif font-bold tracking-wider text-2xl">
+            {userName} Dashboard
+          </p>
+        ) : null}
 
-        <button
-          className="me-20"
+        <div
+          className="flex gap-1 me-10 hover:cursor-pointer"
           onClick={() => setProfile(!profile)}
         >
-          Profile
-        </button>
+          <button className="font-serif font-bold">Profile</button>
+          <img
+            src={imgSrc}
+            alt="no img"
+            className="border-2 w-[40px] h-[40px]  rounded-full object-fit"
+          />
+        </div>
       </div>
 
       <aside

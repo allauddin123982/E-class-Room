@@ -10,19 +10,34 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
 const UpdateStudentProfile = ({ open, onClose }) => {
   const [data, setData] = useState({});
+  
   const [file, setFile] = useState("");
   const { fetchData } = useGetstdInfo();
-
-  useEffect(() => {
-    const uploadFile = () => {
-      const name = new Date().getTime() + file.name;
-      const storageRef = ref(storage, file.name);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
+  const { id } = useParams();
+  const handleImageSelect = (e) => {
+    const selectedFile = e.target.files[0];
+    
+    if (selectedFile) {
+      setFile(selectedFile);
+      
+      // Generate a URL for the selected image and update the <img> tag
+      setSelectedImageUrl(URL.createObjectURL(selectedFile));
+    }
+  };
+ 
+    useEffect(() => {
+      
+      const uploadFile = () => {
+        const name = new Date().getTime() + file.name;
+        const storageRef = ref(storage, file.name);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        
+        uploadTask.on(
         "state_changed",
         (snapshot) => {
           const progress =
@@ -35,7 +50,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
             case "running":
               console.log("Upload is running");
               break;
-            default:
+              default:
               break;
           }
         },
@@ -51,7 +66,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     };
     file && uploadFile();
   }, [file]);
-
+  
   const handleChange = (e) => {
     const id = e.target.id;
     const value = e.target.value;
@@ -59,6 +74,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
   };
 
   const handleUpdate = async (e) => {
+
     e.preventDefault();
     try {
       const studentNameToUpdate = fetchData.length > 0 ? fetchData[0].reg : "";
@@ -66,7 +82,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
       // Query the Firestore collection to find the document with the matching name
       const querySnapshot = await getDocs(
         query(
-          collection(db, "studentdata"),
+          collection(db, `studentdata/${id}/subcollection`),
           where("reg", "==", studentNameToUpdate)
         )
       );
@@ -79,22 +95,22 @@ const UpdateStudentProfile = ({ open, onClose }) => {
         // Get the document ID
         const studentId = studentDoc.id;
 
-        // Define the data you want to update
         const updatedData = {
-        ...data,
+          ...data,
         };
 
         // Update the document with the new data
-        await updateDoc(doc(db, "studentdata", studentId), updatedData);
+        await updateDoc(
+          doc(db, `studentdata/${id}/subcollection`, studentId),
+          updatedData
+        );
 
-        // Optionally, you can clear the form fields or perform any other actions after a successful update.
         setData({
           namee: "",
           reg: "",
           sem: "",
         });
 
-        // Close the modal or perform any other necessary actions
         onClose();
       } else {
         console.log("No matching document found.");
@@ -110,9 +126,10 @@ const UpdateStudentProfile = ({ open, onClose }) => {
         <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
           <div>
             <img
-              src={file}
+              src={ data.img || fetchData[0].img}
               alt=""
               className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
+              onChange={handleImageSelect}
             />
             <label htmlFor="file" className="hover:cursor-pointer">
               Image
@@ -141,7 +158,8 @@ const UpdateStudentProfile = ({ open, onClose }) => {
                   <input
                     id="namee"
                     type="text"
-                    value={data.namee}
+                    placeholder={fetchData[0].namee}
+                    value={data.namee }
                     className="border w-full ps-1"
                     onChange={handleChange}
                   />
@@ -153,6 +171,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
                   <input
                     id="reg"
                     type="text"
+                    placeholder={fetchData[0].reg}
                     value={data.reg}
                     className="border w-full ps-1"
                     onChange={handleChange}
@@ -164,7 +183,8 @@ const UpdateStudentProfile = ({ open, onClose }) => {
                   <input
                     id="sem"
                     type="text"
-                    value={data.sem}
+                    placeholder={fetchData[0].sem}
+                    value={data.sem }
                     className="border w-full ps-1"
                     onChange={handleChange}
                   />

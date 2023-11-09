@@ -26,8 +26,10 @@ const LogIn = () => {
         const user = res.user;
         console.log("Helo login ",user)
         const role = user.displayName;
+        const userId = user.uid;
+        console.log(userId)
         if (role === "student") {
-          navigate("/studentDashboard");
+          navigate(`/studentDashboard/${userId}`);
         } else if (role === "teacher") {
           navigate("/teacherDashboard");
         }else{

@@ -2,19 +2,21 @@ import React, { useEffect, useState } from "react";
 import {
   addDoc,
   collection,
-  doc,
   serverTimestamp,
-  updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useGetstdInfo } from "../../hooks/useGetstdInfo";
+import { useParams } from "react-router-dom";
 
 const UpdateStudentProfile = ({ open, onClose }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
   const [isDataStored, setIsDataStored] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(''); 
+  
   const { fetchData } = useGetstdInfo();
+  const {id} = useParams();
 
   useEffect(() => {
     if (fetchData) {
@@ -59,19 +61,28 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     };
     file && uploadFile();
   }, [file]);
+  
+  const handleImageSelect = (e) => {
+    const selectedFile = e.target.files[0];
 
+    if (selectedFile) {
+      setFile(selectedFile);
+
+      // Generate a URL for the selected image and update the <img> tag
+      setSelectedImageUrl(URL.createObjectURL(selectedFile));
+    }
+  };
   const handleChange = (e) => {
-    const id = e.target.id;
+    const idd = e.target.id;
     const value = e.target.value;
-    setData({ ...data, [id]: value });
+    setData({ ...data, [idd]: value });
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-
     try {
       console.log(data);
-      const res = await addDoc(collection(db, "studentdata"), {
+      const res = await addDoc(collection(db, `studentdata/${id}/subcollection`), {
         ...data,
         timeStamp: serverTimestamp(),
       });
@@ -80,6 +91,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
         reg: "",
         sem: "",
       });
+      onClose();
     } catch (error) {
       console.log(error);
     }
@@ -89,12 +101,13 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     <>
       <div className="overlay bg-gray-300 bg-opacity-80 fixed w-[100%] h-[100%]">
         <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
+
           <div>
             <img
-              src={file}
+              src={selectedImageUrl}
               alt=""
               className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
-            />
+              />
             <label htmlFor="file" className="hover:cursor-pointer">
               Image
             </label>
@@ -102,14 +115,14 @@ const UpdateStudentProfile = ({ open, onClose }) => {
               id="file"
               type="file"
               className="pt-2 hidden"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
+              onChange={handleImageSelect}
+              />
           </div>
           <div className="modalRight">
             <p
               onClick={onClose}
               className="closeBtn fixed top-4 right-6 hover:cursor-pointer"
-            >
+              >
               x
             </p>
             <div className="border mt-3 bg-gray-100  w-[350px] ">
