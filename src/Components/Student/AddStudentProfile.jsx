@@ -1,34 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useGetstdInfo } from "../../hooks/useGetstdInfo";
 import { useParams } from "react-router-dom";
 
 const UpdateStudentProfile = ({ open, onClose }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
-  const [isDataStored, setIsDataStored] = useState(false);
-  const [selectedImageUrl, setSelectedImageUrl] = useState(''); 
-  
-  const { fetchData } = useGetstdInfo();
-  const {id} = useParams();
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
+  const { id } = useParams();
 
-  useEffect(() => {
-    if (fetchData) {
-      // Data is already stored for this user
-      setData(fetchData); // Set the initial form data to the fetched data
-      setIsDataStored(true);
-    }
-  }, [fetchData]);
-
+  //Image set and Upload
   useEffect(() => {
     const uploadFile = () => {
-      const name = new Date().getTime() + file.name;
       const storageRef = ref(storage, file.name);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -61,7 +45,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     };
     file && uploadFile();
   }, [file]);
-  
+
   const handleImageSelect = (e) => {
     const selectedFile = e.target.files[0];
 
@@ -82,10 +66,13 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     e.preventDefault();
     try {
       console.log(data);
-      const res = await addDoc(collection(db, `studentdata/${id}/subcollection`), {
-        ...data,
-        timeStamp: serverTimestamp(),
-      });
+      const res = await addDoc(
+        collection(db, `studentdata/${id}/subcollection`),
+        {
+          ...data,
+          timeStamp: serverTimestamp(),
+        }
+      );
       setData({
         namee: "",
         reg: "",
@@ -101,13 +88,12 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     <>
       <div className="overlay bg-gray-300 bg-opacity-80 fixed w-[100%] h-[100%]">
         <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
-
           <div>
             <img
               src={selectedImageUrl}
               alt=""
               className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
-              />
+            />
             <label htmlFor="file" className="hover:cursor-pointer">
               Image
             </label>
@@ -116,13 +102,13 @@ const UpdateStudentProfile = ({ open, onClose }) => {
               type="file"
               className="pt-2 hidden"
               onChange={handleImageSelect}
-              />
+            />
           </div>
           <div className="modalRight">
             <p
               onClick={onClose}
               className="closeBtn fixed top-4 right-6 hover:cursor-pointer"
-              >
+            >
               x
             </p>
             <div className="border mt-3 bg-gray-100  w-[350px] ">

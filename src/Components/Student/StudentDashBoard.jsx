@@ -35,7 +35,7 @@ const StudentDashBoard = () => {
   if (fetchData && fetchData.length > 0) {
     const userProfile = fetchData[0];
 
-    if (userProfile && userProfile.img && userProfile.namee) {
+    if (userProfile && userProfile.img) {
       imgSrc = userProfile.img;
     } else {
       console.log("no img extracted");

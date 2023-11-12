@@ -76,13 +76,13 @@ const StudentProfile = () => {
           </div>
         </div>
       </div>
-      <UpdateStudentProfile
-        open={updateOpenModal}
-        onClose={() => setUpdateOpenModal(false)}
-      />
       <AddStudentProfile
         open={addOpenModal}
         onClose={() => setAddOpenModal(false)}
+      />
+      <UpdateStudentProfile
+        open={updateOpenModal}
+        onClose={() => setUpdateOpenModal(false)}
       />
     </div>
   );

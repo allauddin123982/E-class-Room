@@ -23,16 +23,15 @@ const LogIn = () => {
     signInWithEmailAndPassword(auth, values.email, values.password)
       .then(async (res) => {
         setSubmitButtonDisabled(false);
-        const user = res.user;
-        console.log("Helo login ",user)
-        const role = user.displayName;
-        const userId = user.uid;
-        console.log(userId)
+        const { uid: userId, displayName: role } = res.user;
+        console.log("User ID:", userId);
+        console.log("User role:", role);
+
         if (role === "student") {
           navigate(`/studentDashboard/${userId}`);
         } else if (role === "teacher") {
-          navigate("/teacherDashboard");
-        }else{
+          navigate(`/teacherDashboard/${userId}`);
+        } else {
           setError(res.err.message);
         }
       })
