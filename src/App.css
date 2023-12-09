@@ -4,3 +4,8 @@ body{
 .App {
   text-align: center;
 }
+.loginBG{
+  background-image: url('./assets/loginBg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}

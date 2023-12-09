@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase-config";
-
+import loginBg from "../../assets/loginBg.png";
 const LogIn = () => {
   const [values, setValues] = useState({
     email: "",
@@ -24,9 +24,6 @@ const LogIn = () => {
       .then(async (res) => {
         setSubmitButtonDisabled(false);
         const { uid: userId, displayName: role } = res.user;
-        console.log("User ID:", userId);
-        console.log("User role:", role);
-
         if (role === "student") {
           navigate(`/studentDashboard/${userId}`);
         } else if (role === "teacher") {
@@ -42,61 +39,70 @@ const LogIn = () => {
   };
 
   return (
-    <div className="flex justify-center p-10">
-      <div className="border bg-gray-100 w-[350px] mt-10">
-        <h1 className="text-2xl">Login</h1>
-        <form onSubmit={handleSubmit} className="  p-2">
-          <div className="mt-2 flex flex-col items-start">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={values.email}
-              onChange={(event) => {
-                setValues((prev) => ({ ...prev, email: event.target.value }));
-              }}
-              className="border w-full"
-            />
-          </div>
-          <div className="mt-2 flex flex-col items-start">
-            <label htmlFor="password">Password: 123456</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={values.password}
-              onChange={(event) => {
-                setValues((prev) => ({
-                  ...prev,
-                  password: event.target.value,
-                }));
-              }}
-              className="border w-full"
-            />
-          </div>
-          {error ? <p className="text-bold text-red-600">{error}</p> : null}
-
-          <div className="mt-2 flex flex-col items-start">
-            <button
-              type="submit"
-              disabled={submitButtonDisabled}
-              className={`${
-                submitButtonDisabled ? "cursor-not-allowed" : null
-              } border p-1`}
-              onClick={handleSubmit}
-            >
-              Login
-            </button>
-
-            <div className="mt-6 text-sm">
-              Create an account
-              <Link to={"/"}>
-                <button className="border ms-2 p-1 ">Sign Up</button>
-              </Link>
+    <div
+      className="flex justify-center p-10 h-screen bg-no-repeat bg-cover "
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <div>
+        <h1 className="text-2xl font-serif font-bold pt-2 bg-gradient-to-r from-indigo-400 to-pink-400 rounded-md relative top-32 left-6 w-[306px] h-[50px]">
+          Login
+        </h1>
+        <div className="border bg-white w-[350px] h-[300px] mt-[100px] rounded-lg">
+          <form onSubmit={handleSubmit} className="p-4">
+            <div className="mt-8 flex flex-col items-start">
+              <label htmlFor="email">Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={values.email}
+                onChange={(event) => {
+                  setValues((prev) => ({ ...prev, email: event.target.value }));
+                }}
+                className="border w-full"
+              />
             </div>
-          </div>
-        </form>
+            <div className="mt-4 flex flex-col items-start">
+              <label htmlFor="password">Password: </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={values.password}
+                onChange={(event) => {
+                  setValues((prev) => ({
+                    ...prev,
+                    password: event.target.value,
+                  }));
+                }}
+                className="border w-full"
+              />
+            </div>
+
+            <div className="mt-5 flex flex-col items-start">
+              <button
+                type="submit"
+                disabled={submitButtonDisabled}
+                className={`${
+                  submitButtonDisabled ? "cursor-not-allowed" : null
+                } border p-1 bg-gray-200 hover:bg-white rounded`}
+                onClick={handleSubmit}
+                >
+                Login
+              </button>
+
+              <div className="mt-6 text-sm">
+                Create an account
+                <Link to={"/"}>
+                  <button className="border ms-2 p-1 bg-gray-200 hover:bg-white rounded ">
+                    Sign Up
+                  </button>
+                </Link>
+              </div>
+                {error ? <p className="text-bold text-red-600">{error}</p> : null}
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

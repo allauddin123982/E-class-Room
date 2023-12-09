@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useGetstdInfo } from "../../hooks/useGetstdInfo";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 
-const UpdateStudentProfile = ({ open, onClose }) => {
+const UpdateStudentProfile = ({ open, onClose, sendDataToUpdate }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
-  const { fetchData } = useGetstdInfo();
   const { id } = useParams();
 
   useEffect(() => {
@@ -53,48 +44,35 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     file && uploadFile();
   }, [file]);
 
-  const handleChange = (e) => {
-    const id = e.target.id;
-    const value = e.target.value;
-    setData({ ...data, [id]: value });
+  const handleChange = ({ target }) => {
+    const { id, value } = target;
+    setData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const studentNameToUpdate = fetchData.length > 0 ? fetchData[0].reg : "";
-
-      // Query the Firestore collection to find the document with the matching name
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, `studentdata/${id}/subcollection`),
-          where("reg", "==", studentNameToUpdate)
-        )
-      );
-
-      // Check if a matching document was found
-      if (!querySnapshot.empty) {
-        // Get the first matching document (assuming names are unique)
-        const studentDoc = querySnapshot.docs[0];
-
-        // Get the document ID
-        const studentId = studentDoc.id;
-
+      //sendDataToUpdate
+      const userDocRef = doc(db, `studentdata/${id}/`);
+      const docSnapshot = await getDoc(userDocRef);
+     
+      if (docSnapshot.exists()) {
         const updatedData = {
           ...data,
         };
 
         // Update the document with the new data
-        await updateDoc(
-          doc(db, `studentdata/${id}/subcollection`, studentId),
-          updatedData
-        );
+        await updateDoc(doc(db, `studentdata/${id}/`), updatedData);
 
         setData({
           namee: "",
           reg: "",
           sem: "",
+          img: "", // Reset img to empty string after updating
         });
+
+        // Clear file input
+        setFile(null);
 
         onClose();
       } else {
@@ -109,22 +87,6 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     <>
       <div className="overlay bg-gray-300 bg-opacity-80 fixed w-[100%] h-[100%]">
         <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
-          <div>
-            <img
-              src={data.img || fetchData[0].img}
-              alt=""
-              className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
-            />
-            <label htmlFor="file" className="hover:cursor-pointer">
-              Image
-            </label>
-            <input
-              id="file"
-              type="file"
-              className="pt-2 hidden"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
-          </div>
           <div className="modalRight">
             <p
               onClick={onClose}
@@ -132,51 +94,69 @@ const UpdateStudentProfile = ({ open, onClose }) => {
             >
               x
             </p>
-            <div className="border mt-3 bg-gray-100  w-[350px] ">
+            <div className="border mt-3 bg-gray-100  w-[550px] ">
               <h1 className="text-2xl">Update Profile</h1>
-              <form className="p-2" onSubmit={handleUpdate}>
-                <div className="mt-2 flex flex-col items-start">
-                  <p htmlFor="Name" className="">
-                    Name
-                  </p>
+              <form className="p-2 flex gap-x-10" onSubmit={handleUpdate}>
+                <div className="w-[200px] flex flex-col items-center">
+                  <img
+                    src={data.img}
+                    alt=""
+                    className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
+                  />
+                  <label htmlFor="file" className="hover:cursor-pointer">
+                    Image
+                  </label>
                   <input
-                    id="namee"
-                    type="text"
-                    placeholder={fetchData[0].namee}
-                    value={data.namee}
-                    className="border w-full ps-1"
-                    onChange={handleChange}
+                    id="file"
+                    type="file"
+                    className="pt-2 hidden"
+                    onChange={(e) => setFile(e.target.files[0])}
                   />
                 </div>
-                <div className="mt-2 flex flex-col items-start">
-                  <p htmlFor="regno" className="">
-                    Reg no
-                  </p>
-                  <input
-                    id="reg"
-                    type="text"
-                    placeholder={fetchData[0].reg}
-                    value={data.reg}
-                    className="border w-full ps-1"
-                    onChange={handleChange}
-                  />
-                </div>
+                <div className="w-[300px]">
+                  <div className="mt-2 flex flex-col items-start">
+                    <p htmlFor="Name" className="">
+                      Name
+                    </p>
+                    <input
+                      id="namee"
+                      type="text"
+                      placeholder={sendDataToUpdate.namee}
+                      value={data.namee}
+                      className="border w-full ps-1"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mt-2 flex flex-col items-start">
+                    <p htmlFor="regno" className="">
+                      Reg no
+                    </p>
+                    <input
+                      id="reg"
+                      type="text"
+                      placeholder={sendDataToUpdate.reg}
+                      value={data.reg}
+                      className="border w-full ps-1"
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                <div className="mt-2 flex flex-col items-start ">
-                  <label htmlFor="semester">semester</label>
-                  <input
-                    id="sem"
-                    type="text"
-                    placeholder={fetchData[0].sem}
-                    value={data.sem}
-                    className="border w-full ps-1"
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mt-4 flex flex-col items-start">
-                  <button type="submit" className="border p-1 hover:bg-white">
-                    Submit
-                  </button>
+                  <div className="mt-2 flex flex-col items-start ">
+                    <label htmlFor="semester">semester</label>
+                    <input
+                      id="sem"
+                      type="text"
+                      placeholder={sendDataToUpdate.sem}
+                      value={data.sem}
+                      className="border w-full ps-1"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mt-4 flex flex-col items-start">
+                    <button type="submit" className="border p-1 hover:bg-white">
+                      Submit
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>

@@ -4,14 +4,16 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import tabs from "../../TeacherTabs.json";
 import TeacherProfile from "./TeacherProfile";
-import { useGetThrInfo } from "../../hooks/useGetThrInfo";
+import CreateClass from "./CreateClass";
+import Home from "./Home"
+import CreatedClass from "./CreatedClass";
 
 const TeacherDashBoard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(false);
+  const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
-  const {fetchThrData} = useGetThrInfo();
-  
+
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -21,19 +23,6 @@ const TeacherDashBoard = () => {
       }
     });
   }, []);
-
-  let imgSrc = ""; // Define imgSrc in the outer scope
-  
-  if (fetchThrData && fetchThrData.length > 0) {
-    const userProfile = fetchThrData[0];
-
-    if (userProfile && userProfile.img ) {
-      imgSrc = userProfile.img;
-    } else {
-      console.log("no img extracted");
-    }
-  }
-
 
   const signUserOut = async () => {
     try {
@@ -45,6 +34,11 @@ const TeacherDashBoard = () => {
       console.error(err);
     }
   };
+
+  const handleTab = (item) => {
+    setTitleName(item.idd);
+  };
+
   return (
     <div>
       <div className="z-[-1] header bg-gray-200 w-full h-14 flex justify-between items-center">
@@ -59,11 +53,11 @@ const TeacherDashBoard = () => {
           onClick={() => setProfile(!profile)}
         >
           <button className="font-serif font-bold">Profile</button>
-          <img
-            src={imgSrc}
+          {/* <img
+            src={}
             alt="no img"
             className="border-2 w-[40px] h-[40px]  rounded-full object-fit"
-          />
+          /> */}
         </div>
       </div>
       <aside
@@ -72,8 +66,14 @@ const TeacherDashBoard = () => {
       >
         <div className="h-full px-3 pb-2 overflow-y-auto bg-white ">
           <ul className="pt-16 space-y-4 font-medium text-left">
-            {tabs.map((item) => (
-              <li>
+            {tabs.map((item, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  handleTab(item);
+                  setProfile(false);
+                }}
+              >
                 <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
                   <span className="ml-3">{item.title}</span>
                 </p>
@@ -89,7 +89,23 @@ const TeacherDashBoard = () => {
           </button>
         </div>
       </aside>
-
+      <div>
+        {profile ? <TeacherProfile /> : null}
+        {titleName === "home" && profile === false ? (
+          <Home />
+        ) : titleName === "createClass" && profile === false ? (
+          <CreateClass />
+        ) : titleName === "createdClass" && profile === false ? (
+          <CreatedClass /> )
+        // ) : titleName === "joinClass" && profile === false ? (
+        //   <ClassJoin />
+        // ) : titleName === "joindClasses" && profile === false ? (
+        //   <JoinedClass />
+        // ) : titleName === "chat" && profile === false ? (
+        //   <Chat />
+        // )
+        : null}
+      </div>
       <button
         className="flex absolute pb-6 bottom-0 left-6 font-bold"
         onClick={signUserOut}

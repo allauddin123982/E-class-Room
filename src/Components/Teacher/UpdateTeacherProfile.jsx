@@ -2,20 +2,15 @@ import React, { useEffect, useState } from "react";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {
-  collection,
   doc,
-  getDocs,
-  query,
+  getDoc,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import { useGetThrInfo } from "../../hooks/useGetThrInfo";
 
 const UpdateTeacherProfile = ({ open, onClose }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
-  const { fetchThrData } = useGetThrInfo();
   const { id } = useParams();
 
   useEffect(() => {
@@ -53,43 +48,24 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
     file && uploadFile();
   }, [file]);
 
-  const handleChange = (e) => {
-    const id = e.target.id;
-    const value = e.target.value;
-    setData({ ...data, [id]: value });
+  const handleChange = ({ target }) => {
+    const { id, value } = target;
+    setData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const teachertNameToUpdate =
-        fetchThrData.length > 0 ? fetchThrData[0].namee : "";
-
-      // Query the Firestore collection to find the document with the matching name
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, `teacherdata/${id}/subcollection`),
-          where("namee", "==", teachertNameToUpdate)
-        )
-      );
-
-      // Check if a matching document was found
-      if (!querySnapshot.empty) {
-        // Get the first matching document (assuming names are unique)
-        const teacherDoc = querySnapshot.docs[0];
-
-        // Get the document ID
-        const teacherId = teacherDoc.id;
-
+      const userDocRef = doc(db, `teacherdata/${id}/`);
+      const docSnapshot = await getDoc(userDocRef);
+     
+      if (docSnapshot.exists()) {
         const updatedData = {
           ...data,
         };
 
         // Update the document with the new data
-        await updateDoc(
-          doc(db, `teacherdata/${id}/subcollection`, teacherId),
-          updatedData
-        );
+        await updateDoc(doc(db, `teacherdata/${id}/`), updatedData);
 
         setData({
           namee: "",
@@ -113,7 +89,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
         <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
           <div>
             <img
-              src={data.img || fetchThrData[0].img}
+              src={data.img }
               alt=""
               className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
             />
@@ -144,7 +120,6 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                   <input
                     id="namee"
                     type="text"
-                    placeholder={fetchThrData[0].namee}
                     value={data.namee}
                     className="border w-full ps-1"
                     onChange={handleChange}
@@ -157,7 +132,6 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                   <input
                     id="qua"
                     type="text"
-                    placeholder={fetchThrData[0].qua}
                     value={data.qua}
                     className="border w-full ps-1"
                     onChange={handleChange}
@@ -169,7 +143,6 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                   <input
                     id="des"
                     type="text"
-                    placeholder={fetchThrData[0].des}
                     value={data.des}
                     className="border w-full ps-1"
                     onChange={handleChange}

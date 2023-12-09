@@ -4,8 +4,9 @@ import LogIn from "./Components/Login/LogIn";
 import SignUp from "./Components/SignUp/SignUp";
 import TeacherDashBoard from "./Components/Teacher/TeacherDashBoard";
 import StudentDashBoard from "./Components/Student/StudentDashBoard";
+
 function App() {
- 
+  
   return (
     <>
       <div className="App">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase-config";
 import tabs from "../../studentTabs.json";
@@ -10,15 +10,16 @@ import JoinedClass from "./JoinedClass";
 import Chat from "./Chat";
 import Home from "./Home";
 import StudentProfile from "./StudentProfile";
-import { useGetstdInfo } from "../../hooks/useGetstdInfo";
+import { AuthContext } from "../../hooks/AuthContext";
 
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
-  const { fetchData } = useGetstdInfo();
 
+  const {currentUser} = useContext(AuthContext);
+console.log(currentUser)  
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -26,27 +27,15 @@ const StudentDashBoard = () => {
       } else {
         setUserName(null);
       }
-      console.log(userName);
     });
   }, []);
 
-  let imgSrc = ""; // Define imgSrc in the outer scope
-  
-  if (fetchData && fetchData.length > 0) {
-    const userProfile = fetchData[0];
 
-    if (userProfile && userProfile.img) {
-      imgSrc = userProfile.img;
-    } else {
-      console.log("no img extracted");
-    }
-  }
   const signUserOut = async () => {
     try {
       await signOut(auth);
       localStorage.removeItem("auth");
       navigate("/");
-      console.log({ auth });
     } catch (err) {
       console.error(err);
     }
@@ -70,7 +59,7 @@ const StudentDashBoard = () => {
         >
           <button className="font-serif font-bold">Profile</button>
           <img
-            src={imgSrc}
+            src={currentUser.img}
             alt="no img"
             className="border-2 w-[40px] h-[40px]  rounded-full object-fit"
           />

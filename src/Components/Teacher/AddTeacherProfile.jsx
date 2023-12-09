@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import {useGetThrInfo} from '../../hooks/useGetThrInfo'
 const AddTeacherProfile = ({ open, onClose }) => {
-   const [data, setData] = useState({});
+  const [data, setData] = useState({});
   const [file, setFile] = useState("");
-  const [isDataStored, setIsDataStored] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
 
   const { id } = useParams();
-  const { fetchThrData } = useGetThrInfo();
-  
-  // useEffect(() => {
-  //   if (fetchThrData) {
-  //     // Data is already stored for this user
-  //     setData(fetchThrData); // Set the initial form data to the fetched data
-  //     setIsDataStored(true);
-  //   }
-  // }, [fetchThrData]);
 
   useEffect(() => {
     const uploadFile = () => {
@@ -62,29 +57,29 @@ const AddTeacherProfile = ({ open, onClose }) => {
 
     if (selectedFile) {
       setFile(selectedFile);
-
-      // Generate a URL for the selected image and update the <img> tag
       setSelectedImageUrl(URL.createObjectURL(selectedFile));
     }
   };
 
-  const handleChange = (e) => {
-    const idd = e.target.id;
-    const value = e.target.value;
-    setData({ ...data, [idd]: value });
+  const handleChange = ({ target }) => {
+    const { id, value } = target;
+    setData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      console.log(data);
-      const res = await addDoc(
-        collection(db, `teacherdata/${id}/subcollection`),
+      const userDocRef = doc(db, `teacherdata/${id}/`);
+
+      await setDoc(
+        userDocRef,
         {
           ...data,
           timeStamp: serverTimestamp(),
-        }
+        },
+        { merge: true }
       );
+
       setData({
         namee: "",
         qua: "",
@@ -112,7 +107,10 @@ const AddTeacherProfile = ({ open, onClose }) => {
             id="file"
             type="file"
             className="pt-2 hidden"
-            onChange={handleImageSelect}
+            onChange={(e) => {
+              handleImageSelect(e);
+              setFile(e.target.files[0]);
+            }}
           />
         </div>
         <div className="modalRight">

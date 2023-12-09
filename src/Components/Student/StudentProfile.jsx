@@ -1,24 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import UpdateStudentProfile from "./UpdateStudentProfile";
 import AddStudentProfile from "./AddStudentProfile";
-import { useGetstdInfo } from "../../hooks/useGetstdInfo";
+import { db, storage } from "../../firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import { getDownloadURL, ref } from "firebase/storage";
+
 const StudentProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
+  const { id } = useParams();
+  const [userData, setUserData] = useState({});
+  const [imageUrl, setImageUrl] = useState("");
   const [buttonValue, setButtonValue] = useState(false);
-  const { fetchData } = useGetstdInfo();
+
   useEffect(() => {
-    if (fetchData && fetchData.length > 0) {
-      setButtonValue(true);
-    }
-  }, [fetchData]);
+    const fetchStudentData = async () => {
+      try {
+        // Construct the document reference
+        const userDocRef = doc(db, `studentdata/${id}/`);
 
-  console.log("heelo");
-  console.log({ fetchData });
+        // Fetch the document
+        const docSnapshot = await getDoc(userDocRef);
 
- 
+        // Check if the document exists
+        if (docSnapshot.exists()) {
+          // Access the data using the data() method
+          const userData = docSnapshot.data();
+          setUserData(userData);
+          if (userData && userData.img) {
+            const storageRef = ref(storage, `student/${id}/`);
+            const url = await getDownloadURL(storageRef);
+            setImageUrl(url);
+          }
+        } else {
+          console.log("Document does not exist");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
+    fetchStudentData();
+  }, []);
+
+  
   return (
+    <>
     <div className="flex justify-center">
       <div className="modalcontainer p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 bg-white ">
         <div className="modalRight">
@@ -42,35 +70,32 @@ const StudentProfile = () => {
             )}
           </div>
           <div className="w-[350px]">
-            <form className="p-2 flex flex-col gap-y-10">
-              <ul className="mt-2 flex items-start">
-                {fetchData.map((student) => (
-                  <li
-                    key={student.id}
-                    className="p-4 flex items-center gap-10  text-left"
-                  >
-                    <div className="w-[150px] h-[150px]">
-                      <img
-                        src={student.img}
-                        alt="no img"
-                        className="border-2 w-[150px] h-[150px] rounded-full object-fit"
-                      />
-                    </div>
-                    <div className="w-[300px] flex flex-col gap-y-5 ">
-                      <p className="">
-                        <strong className="mr-14">Name:</strong> {student.namee}
-                      </p>
-                      <p className="">
-                        <strong className="mr-[47px]">Reg no:</strong>
-                        {student.reg}
-                      </p>
-                      <p className="">
-                        <strong className="mr-[32px]">Semester:</strong>
-                        {student.sem}
-                      </p>
-                    </div>
-                  </li>
-                ))}
+            <form>
+              <ul className="mt-2 flex items-center gap-x-10 w-[500px]">
+                <img
+                  src={userData.img}
+                  alt="no img"
+                  className="w-40 h-40 rounded-full object-cover"
+                />
+                {userData ? (
+                  <div>
+                  <div className=" flex gap-x-10 p-4">
+                    <h1>Name</h1>
+                    <p>{userData.namee}</p>
+                  </div>
+                  <div className=" flex gap-x-10 p-4">
+                    <h1>Reg no: </h1>
+                    <p>{userData.reg}</p>
+                  </div>
+                  <div className=" flex gap-x-10 p-4">
+                    <h1>Semester: </h1>
+                    <p>{userData.sem}</p>
+                  </div>
+
+                  </div>
+                ) : (
+                  <p>Loading...</p>
+                )}
               </ul>
             </form>
           </div>
@@ -81,10 +106,12 @@ const StudentProfile = () => {
         onClose={() => setAddOpenModal(false)}
       />
       <UpdateStudentProfile
+        sendDataToUpdate={userData}
         open={updateOpenModal}
         onClose={() => setUpdateOpenModal(false)}
       />
     </div>
+    </>
   );
 };
 

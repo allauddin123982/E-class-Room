@@ -1,15 +1,18 @@
 [
     {
-        "title":"Home"
+        "title":"Home",
+        "idd":"home"
+    },
+    {
+        "title":"Create Class",
+        "idd":"createClass"
+    },
+    {
+        "title":"Created Classes",
+        "idd":"createdClass"
     },
     {
         "title":"Today Classes"
-    },
-    {
-        "title":"Create Class"
-    },
-    {
-        "title":"Created Classes"
     },
     {
         "title":"Chat"
