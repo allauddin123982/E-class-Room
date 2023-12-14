@@ -57,13 +57,14 @@ const CreateClass = () => {
         userDocRef,
         {
           ...stdList,
-          timeStamp: serverTimestamp(),
-        },
-        { merge: true }
+          // timeStamp: serverTimestamp(),
+        }
+        // { merge: true }
       );
     } catch (error) {
       console.error(error);
     }
+    
   };
   
   return (
