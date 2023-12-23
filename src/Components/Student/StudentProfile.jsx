@@ -47,8 +47,8 @@ const StudentProfile = () => {
   
   return (
     <>
-    <div className="flex justify-center">
-      <div className="modalcontainer p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 bg-white ">
+    <div className="flex justify-center  bg-red-400">
+      <div className="modalcontainer p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 shadow-2xl bg-white">
         <div className="modalRight">
           <div className="flex justify-end ml-52 w-[300px] ">
             {buttonValue ? (
@@ -69,7 +69,7 @@ const StudentProfile = () => {
               </button>
             )}
           </div>
-          <div className="w-[350px]">
+          <div className="w-[350px] ">
             <form>
               <ul className="mt-2 flex items-center gap-x-10 w-[500px]">
                 <img

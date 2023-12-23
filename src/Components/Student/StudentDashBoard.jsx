@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase-config";
+import { auth, db } from "../../firebase-config";
 import tabs from "../../studentTabs.json";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TodayClasses from "./TodayClasses";
 import ClassJoin from "./ClassJoin";
 import TimeTable from "./TimeTable";
@@ -11,15 +11,19 @@ import Chat from "./Chat";
 import Home from "./Home";
 import StudentProfile from "./StudentProfile";
 import { AuthContext } from "../../hooks/AuthContext";
+import { messaging } from "../../firebase-config";
+import { getToken } from "firebase/messaging";
+import { doc, setDoc } from "firebase/firestore";
 
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
-
   const {currentUser} = useContext(AuthContext);
-console.log(currentUser)  
+  console.log(currentUser)  
+  const { id } = useParams();
+  
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -30,6 +34,30 @@ console.log(currentUser)
     });
   }, []);
 
+// Function to update messaging token in Firestore
+const updateMessagingTokenInFirestore = async (messagingToken) => {
+  const studentDocRef = doc(db, `studentdata/${id}/`);
+
+  // Update the messagingToken field in the Firestore document
+  await setDoc(studentDocRef, { messagingToken }, { merge: true });
+};
+
+  async function requestPermission() {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const token = await getToken(messaging, { vapidKey: "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8"})          // Create a notification
+      console.log(token)
+      //send this token to db
+      updateMessagingTokenInFirestore(token);
+    } else if (permission === "denied") {
+      alert("you won't get Notification");
+    } else {
+      console.log("chose nothing");
+    }
+  }
+  useEffect(()=>{
+    requestPermission();
+  },[])
 
   const signUserOut = async () => {
     try {
@@ -79,6 +107,8 @@ console.log(currentUser)
                   handleTab(item);
                   setProfile(false);
                 }}
+                className="cursor-pointer"
+
               >
                 <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
                   <span className="ml-3">{item.title}</span>

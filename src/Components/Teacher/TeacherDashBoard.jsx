@@ -73,6 +73,7 @@ const TeacherDashBoard = () => {
                   handleTab(item);
                   setProfile(false);
                 }}
+                className="cursor-pointer"
               >
                 <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
                   <span className="ml-3">{item.title}</span>
@@ -89,7 +90,7 @@ const TeacherDashBoard = () => {
           </button>
         </div>
       </aside>
-      <div>
+      <div >
         {profile ? <TeacherProfile /> : null}
         {titleName === "home" && profile === false ? (
           <Home />

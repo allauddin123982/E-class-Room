@@ -14,7 +14,8 @@ const SignUp = () => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async(e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!values.email || !values.password || !values.role) {
       setError("Please fill all fields");
@@ -22,25 +23,30 @@ const SignUp = () => {
     }
     setError("");
     setSubmitButtonDisabled(true);
-    const res = await createUserWithEmailAndPassword(auth, values.email, values.password)
+
+    const res = await createUserWithEmailAndPassword(
+      auth,
+      values.email,
+      values.password
+    )
       .then(async (res) => {
         setSubmitButtonDisabled(false);
         // const user = res.user;
         // console.log({ user });
-        
+
         await updateProfile(res.user, {
           displayName: values.role, //set user name
         });
 
-        if(values.role === 'student'){
-
+        if (values.role === "student") {
           await setDoc(doc(db, "studentdata", res.user.uid), {
             uid: res.user.uid,
             email: values.email,
             role: values.role,
             // Add more fields as needed
           });
-        }else{
+          
+        } else {
           await setDoc(doc(db, "teacherdata", res.user.uid), {
             uid: res.user.uid,
             email: values.email,
@@ -90,7 +96,7 @@ const SignUp = () => {
               </div>
               <div className="mt-4 flex flex-col items-start">
                 <p htmlFor="password" className="">
-                  Password: 
+                  Password:
                 </p>
                 <input
                   type="password"

@@ -5,6 +5,28 @@ import { db } from "../../firebase-config";
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState([]);
   const [classes, setClasses] = useState();
+// Function to check if it's time to send a notification
+  // const sendNotification = () => {
+  //   const currentTime = getCurrentTime();
+
+  //   // Extract hours and minutes from the time strings
+  //   const [currentHours, currentMinutes] = currentTime.split(":").map(Number);
+  //   const [notificationHours, notificationMinutes] = notificationTime
+  //     .split(":")
+  //     .map(Number);
+
+  //   // Calculate the time difference in minutes
+  //   const timeDifference =
+  //     (currentHours - notificationHours) * 60 +
+  //     (currentMinutes - notificationMinutes);
+
+  //   if (timeDifference >= 0 && timeDifference <= 5) {
+  //     console.log("Time to send notification");
+  //     // Call the function to send a notification to students
+  //   } else {
+  //     console.log("Not time yet");
+  //   }
+  // };
 
   useEffect(() => {
     // classCreated fetch that students
@@ -29,6 +51,54 @@ const CreatedClass = () => {
     modal.showModal();
     setClasses(element);
   };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    if (!values.email || !values.password || !values.role) {
+      setError("Please fill all fields");
+      return;
+    }
+    setError("");
+    setSubmitButtonDisabled(true);
+    const res = await createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then(async (res) => {
+        setSubmitButtonDisabled(false);
+        // const user = res.user;
+        // console.log({ user });
+        
+        await updateProfile(res.user, {
+          displayName: values.role, //set user name
+        });
+      
+        if(values.role === 'student'){
+
+          await setDoc(doc(db, "studentdata", res.user.uid), {
+            uid: res.user.uid,
+            email: values.email,
+            role: values.role,
+            // fcmToken:
+            // Add more fields as needed
+          });
+        }else {
+            await setDoc(doc(db, "teacherdata", res.user.uid), {
+              uid: res.user.uid,
+              email: values.email,
+              role: values.role,
+              // Add more fields as needed
+            });
+          }
+  
+          navigate("/login");
+        })
+      .catch((err) => {
+          setSubmitButtonDisabled(false);
+          setError(err.message);
+        });
+    };
+  
+
+
+
   console.log({classes});
   return (
     <>
