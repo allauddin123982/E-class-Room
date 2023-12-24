@@ -92,27 +92,27 @@ const CreateClass = () => {
   }
   
   // Function to send a notification to a specific student
-  const sendNotificationToStudent = (student, notify) => {
-    console.log(student.namee);
-    console.log(student.messagingToken);
-    console.log("5 minutes before");
-
+  const sendNotificationToStudent = async (student, notify) => {
     try {
       if (student.messagingToken) {
-        // Create a notification
-        new Notification(`Class Reminder`, {
-          body: `Your class is starting in 5 minutes at ${notify}. Be ready!`,
-        });
+        // Use the messaging token to send a notification to the device
+        const message = {
+          data: {
+            class: `Class Reminder: Your class is starting in 5 minutes at ${notify}. Be ready!`,
+          },
+          token: student.messagingToken,
+        };
+        
+        const response = await getMessaging().send(message);
+        console.log("Notification sent successfully!", response);
       } else {
-        console.error(
-          "Messaging token not available for student:",
-          student.namee
-        );
+        console.error("Messaging token not available for student:", student.namee);
       }
     } catch (error) {
       console.error("Error sending notification:", error);
     }
   };
+  
 
   const getCurrentTime = () => {
     const tdime = new Date();
