@@ -98,7 +98,7 @@ const CreateClass = () => {
         // Use the messaging token to send a notification to the device
         const message = {
           data: {
-            class: `Class Reminder: Your class is starting in 5 minutes at ${notify}. Be ready!`,
+            class: `Class Reminder:${student.namee} ${notify}. Be ready!`,
           },
           token: student.messagingToken,
         };
