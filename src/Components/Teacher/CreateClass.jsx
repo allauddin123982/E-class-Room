@@ -90,30 +90,29 @@ const CreateClass = () => {
       .toString()
       .padStart(2, "0")}`;
   }
+  
   // Function to send a notification to a specific student
-  // Function to send a notification to a specific student
-const sendNotificationToStudent = (student, notify) => {
-  console.log(student.namee);
-  console.log(student.messagingToken);
-  console.log("5 minutes before");
+  const sendNotificationToStudent = (student, notify) => {
+    console.log(student.namee);
+    console.log(student.messagingToken);
+    console.log("5 minutes before");
 
-  try {
-    if (student.messagingToken) {
-      // Create a notification
-      new Notification(`Class Reminder`, {
-        body: `Your class is starting in 5 minutes at ${notify}. Be ready!`,
-      });
-    } else {
-      console.error(
-        "Messaging token not available for student:",
-        student.namee
-      );
+    try {
+      if (student.messagingToken) {
+        // Create a notification
+        new Notification(`Class Reminder`, {
+          body: `Your class is starting in 5 minutes at ${notify}. Be ready!`,
+        });
+      } else {
+        console.error(
+          "Messaging token not available for student:",
+          student.namee
+        );
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
     }
-  } catch (error) {
-    console.error("Error sending notification:", error);
-  }
-};
-
+  };
 
   const getCurrentTime = () => {
     const tdime = new Date();
