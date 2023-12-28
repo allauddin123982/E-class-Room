@@ -1,14 +1,13 @@
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase-config";
-import { getMessaging } from "firebase/messaging";
 const CreateClass = () => {
   const [fetchStudentData, setFetchStudentData] = useState([]);
   const [className, setClassName] = useState("");
   const [classTime, setClassTime] = useState("");
   const [stdList, setStdList] = useState([]);
   const [classTimers, setClassTimers] = useState({});
-
+  
   useEffect(() => {
     const fetchStudentData = async () => {
       let list = [];
@@ -90,30 +89,31 @@ const CreateClass = () => {
       .toString()
       .padStart(2, "0")}`;
   }
-  
+
   // Function to send a notification to a specific student
-  const sendNotificationToStudent = async (student, notify) => {
+
+  const sendNotificationToStudent = async (student) => {
+    console.log("Time matched");
+
     try {
       if (student.messagingToken) {
-        // Use the messaging token to send a notification to the device
-        const message = {
-          data: {
-            class: `Class Reminder:${student.namee} ${notify}. Be ready!`,
-          },
-          token: student.messagingToken,
+        const data = {
+          message: `Your class is starting in 5 minutes, Be ready!`,
         };
-        
-        const response = await getMessaging().send(message);
-        console.log("Notification sent successfully!", response);
+
+        console.log("Notification sent successfully!");
       } else {
-        console.error("Messaging token not available for student:", student.namee);
+        console.error(
+          "Messaging token not available for student:",
+          student.namee
+        );
       }
     } catch (error) {
       console.error("Error sending notification:", error);
     }
   };
-  
 
+  
   const getCurrentTime = () => {
     const tdime = new Date();
     const hr = tdime.getHours();

@@ -20,10 +20,9 @@ const StudentDashBoard = () => {
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
-  const {currentUser} = useContext(AuthContext);
-  console.log(currentUser)  
+  const { currentUser } = useContext(AuthContext);
+  console.log(currentUser);
   const { id } = useParams();
-  
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -34,19 +33,22 @@ const StudentDashBoard = () => {
     });
   }, []);
 
-// Function to update messaging token in Firestore
-const updateMessagingTokenInFirestore = async (messagingToken) => {
-  const studentDocRef = doc(db, `studentdata/${id}/`);
+  // Function to update messaging token in Firestore
+  const updateMessagingTokenInFirestore = async (messagingToken) => {
+    const studentDocRef = doc(db, `studentdata/${id}/`);
 
-  // Update the messagingToken field in the Firestore document
-  await setDoc(studentDocRef, { messagingToken }, { merge: true });
-};
+    // Update the messagingToken field in the Firestore document
+    await setDoc(studentDocRef, { messagingToken }, { merge: true });
+  };
 
   async function requestPermission() {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      const token = await getToken(messaging, { vapidKey: "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8"})          // Create a notification
-      console.log(token)
+      const token = await getToken(messaging, {
+        vapidKey:
+          "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8",
+      }); // Create a notification
+      console.log(token);
       //send this token to db
       updateMessagingTokenInFirestore(token);
     } else if (permission === "denied") {
@@ -55,9 +57,9 @@ const updateMessagingTokenInFirestore = async (messagingToken) => {
       console.log("chose nothing");
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     requestPermission();
-  },[])
+  }, []);
 
   const signUserOut = async () => {
     try {
@@ -108,7 +110,6 @@ const updateMessagingTokenInFirestore = async (messagingToken) => {
                   setProfile(false);
                 }}
                 className="cursor-pointer"
-
               >
                 <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
                   <span className="ml-3">{item.title}</span>
