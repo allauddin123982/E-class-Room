@@ -5,11 +5,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging } from "firebase/messaging";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyB5iowNE0LfgddCFcihCLk5O-7uiwWQfHg",
   authDomain: "e-class-room-278f6.firebaseapp.com",
@@ -23,9 +19,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
-
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth();
 const messaging = getMessaging(app);
+
+
+
 export {app, auth, db, storage, messaging};

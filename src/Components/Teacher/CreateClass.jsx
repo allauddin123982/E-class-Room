@@ -1,13 +1,13 @@
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { db } from "../../firebase-config";
+import { db, messaging, genToken } from "../../firebase-config";
 const CreateClass = () => {
   const [fetchStudentData, setFetchStudentData] = useState([]);
   const [className, setClassName] = useState("");
   const [classTime, setClassTime] = useState("");
   const [stdList, setStdList] = useState([]);
   const [classTimers, setClassTimers] = useState({});
-  
+
   useEffect(() => {
     const fetchStudentData = async () => {
       let list = [];
@@ -89,31 +89,33 @@ const CreateClass = () => {
       .toString()
       .padStart(2, "0")}`;
   }
-
   // Function to send a notification to a specific student
-
-  const sendNotificationToStudent = async (student) => {
+  const sendNotificationToStudent = (student, notify) => {
     console.log("Time matched");
+    let body = {
+      to: student.messagingToken,
+      notification: {
+        title: "hello",
+        body: "Gashti",
+      },
+    };
+    let options = {
+      method: "POST",
+      headers: new Headers({
+        Authorization:
+        "key=AAAAUAeZ2EI:APA91bGbkuvMeK_Fqo7Wfho1hmGL5fMABCnpoq_7JIBLDtDOqG0q2Z3YfDlfSuI7rhMO-oMYJ7Hl55qEDEsA_gGeSvxMi29FI2P6C7T8I5nsGbQLyysYPvGCht6vJ7CIkktWXHglh1Mp",
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify(body),
+    };
 
-    try {
-      if (student.messagingToken) {
-        const data = {
-          message: `Your class is starting in 5 minutes, Be ready!`,
-        };
-
-        console.log("Notification sent successfully!");
-      } else {
-        console.error(
-          "Messaging token not available for student:",
-          student.namee
-        );
-      }
-    } catch (error) {
-      console.error("Error sending notification:", error);
-    }
+    fetch("https://fcm.googleapis.com/fcm/send", options)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
   };
 
-  
   const getCurrentTime = () => {
     const tdime = new Date();
     const hr = tdime.getHours();

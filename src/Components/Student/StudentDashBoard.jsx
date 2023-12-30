@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth, db } from "../../firebase-config";
 import tabs from "../../studentTabs.json";
 import { useNavigate, useParams } from "react-router-dom";
 import TodayClasses from "./TodayClasses";
@@ -10,19 +8,21 @@ import JoinedClass from "./JoinedClass";
 import Chat from "./Chat";
 import Home from "./Home";
 import StudentProfile from "./StudentProfile";
+import { signOut } from "firebase/auth";
+import { auth, db, messaging } from "../../firebase-config";
 import { AuthContext } from "../../hooks/AuthContext";
-import { messaging } from "../../firebase-config";
-import { getToken } from "firebase/messaging";
 import { doc, setDoc } from "firebase/firestore";
-
+import { onMessage, getToken } from "firebase/messaging";
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("home");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
+  const [notification, setNotification] = useState({ title: "", body: "" });
   const { currentUser } = useContext(AuthContext);
   console.log(currentUser);
   const { id } = useParams();
+
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -33,7 +33,22 @@ const StudentDashBoard = () => {
     });
   }, []);
 
-  // Function to update messaging token in Firestore
+  useEffect(() => {
+    if (notification?.title) {
+      DisplayNotification();
+    }
+  }, [notification]);
+
+  const DisplayNotification = () => {
+    return (
+      <div>
+        <p>Class remainder {notification.title}</p>
+        <p>{notification.body}</p>
+        <p>class will start in 5m</p>
+      </div>
+    );
+  };
+  //Function to update messaging token in Firestore
   const updateMessagingTokenInFirestore = async (messagingToken) => {
     const studentDocRef = doc(db, `studentdata/${id}/`);
 
@@ -48,7 +63,7 @@ const StudentDashBoard = () => {
         vapidKey:
           "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8",
       }); // Create a notification
-      console.log(token);
+      console.log("new token generated ", token);
       //send this token to db
       updateMessagingTokenInFirestore(token);
     } else if (permission === "denied") {
@@ -57,9 +72,26 @@ const StudentDashBoard = () => {
       console.log("chose nothing");
     }
   }
-  useEffect(() => {
-    requestPermission();
-  }, []);
+  const onMessageListener = () => {
+    return new Promise((resolve) => {
+      onMessage(messaging, (payload) => {
+        console.log("on message payload", payload);
+        resolve(payload);
+      });
+    });
+  };
+
+  requestPermission();
+  onMessageListener()
+    .then((payload) => {
+      setNotification({
+        title: payload?.notification.title,
+        body: payload?.notification.body,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   const signUserOut = async () => {
     try {
@@ -126,6 +158,7 @@ const StudentDashBoard = () => {
           </button>
         </div>
       </aside>
+
       <div>
         {profile ? <StudentProfile /> : null}
         {titleName === "home" && profile === false ? (
