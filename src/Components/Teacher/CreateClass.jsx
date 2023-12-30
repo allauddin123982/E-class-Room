@@ -95,8 +95,8 @@ const CreateClass = () => {
     let body = {
       to: student.messagingToken,
       notification: {
-        title: "hello",
-        body: "Gashti",
+        title: "Class Notification ",
+        body: `${student.namee} class is strting in 5 minutes, Be ready`,
       },
     };
     let options = {
