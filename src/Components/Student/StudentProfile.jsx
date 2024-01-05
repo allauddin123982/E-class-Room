@@ -43,73 +43,73 @@ const StudentProfile = () => {
 
     fetchStudentData();
   }, []);
-  console.log(userData)
+  console.log(buttonValue);
   return (
     <>
-    <div className="flex justify-center bg-red-400">
-      <div className="modalcontainer bg-white p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 shadow-2xl">
-        <div className="modalRight">
-          <div className="flex justify-end ml-52 w-[300px] ">
-            {buttonValue ? (
-              <button
-                onClick={() => {
-                  setUpdateOpenModal(true);
-                }}
-                className="border p-1 rounded hover:bg-gray-200"
-              >
-                Update Profile
-              </button>
-            ) : (
-              <button
-                onClick={() => setAddOpenModal(true)}
-                className="border p-1 rounded hover:bg-gray-200"
-              >
-                Add Profile
-              </button>
-            )}
-          </div>
-          <div className="w-[350px] ">
-            <form>
-              <ul className="mt-2 flex items-center gap-x-10 w-[500px]">
-                <img
-                  src={userData.img}
-                  alt="no img"
-                  className="w-40 h-40 rounded-full object-cover"
-                />
-                {userData ? (
-                  <div>
-                  <div className=" flex gap-x-10 p-4">
-                    <h1>Name:</h1>
-                    <p>{userData.namee}</p>
-                  </div>
-                  <div className=" flex gap-x-10 p-4">
-                    <h1>Reg no: </h1>
-                    <p>{userData.reg}</p>
-                  </div>
-                  <div className=" flex gap-x-10 p-4">
-                    <h1>Semester: </h1>
-                    <p>{userData.sem}</p>
-                  </div>
-
-                  </div>
-                ) : (
-                  <p>Loading...</p>
-                )}
-              </ul>
-            </form>
+      <div className="flex justify-center bg-red-400">
+        <div className="modalcontainer bg-white p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 shadow-2xl">
+          <div className="modalRight">
+            <div className="flex justify-end ml-52 w-[300px] ">
+              {userData ? (
+                <button
+                  onClick={() => {
+                    setUpdateOpenModal(true);
+                  }}
+                  className="border p-1 rounded hover:bg-gray-200"
+                >
+                  Update Profile
+                </button>
+              ) : (
+                <button
+                  onClick={() => setAddOpenModal(true)}
+                  className="border p-1 rounded hover:bg-gray-200"
+                >
+                  Add Profile
+                </button>
+              )}
+            </div>
+            <div className="w-[350px] ">
+              <form>
+                <ul className="mt-2 flex items-center gap-x-10 w-[500px]">
+                  <img
+                    src={userData.img}
+                    alt="no img"
+                    className="w-40 h-40 rounded-full object-cover"
+                  />
+                  {userData ? (
+                    <div>
+                      <div className=" flex gap-x-10 p-4">
+                        <h1>Name:</h1>
+                        <p>{userData.namee}</p>
+                      </div>
+                      <div className=" flex gap-x-10 p-4">
+                        <h1>Reg no: </h1>
+                        <p>{userData.reg}</p>
+                      </div>
+                      <div className=" flex gap-x-10 p-4">
+                        <h1>Semester: </h1>
+                        <p>{userData.sem}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p>Loading...</p>
+                  )}
+                </ul>
+              </form>
+            </div>
           </div>
         </div>
+        <AddStudentProfile
+          open={addOpenModal}
+          onClose={() => setAddOpenModal(false)}
+          setButtonValue={setButtonValue}
+        />
+        <UpdateStudentProfile
+          sendDataToUpdate={userData}
+          open={updateOpenModal}
+          onClose={() => setUpdateOpenModal(false)}
+        />
       </div>
-      <AddStudentProfile
-        open={addOpenModal}
-        onClose={() => setAddOpenModal(false)}
-      />
-      <UpdateStudentProfile
-        sendDataToUpdate={userData}
-        open={updateOpenModal}
-        onClose={() => setUpdateOpenModal(false)}
-      />
-    </div>
     </>
   );
 };

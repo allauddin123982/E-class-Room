@@ -4,15 +4,14 @@ import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useParams } from "react-router-dom";
 
-const UpdateStudentProfile = ({ open, onClose }) => {
+const UpdateStudentProfile = ({ open, onClose, setButtonValue }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
-  const [buttonVal, setButtonVal] = useState(false);
+  // const [buttonVal, setButtonVal] = useState(false);
   const { id } = useParams();
 
   //Image set and Upload
- 
   useEffect(() => {
     const uploadFile = () => {
       // const name = new Date().getTime() + file.name;
@@ -48,7 +47,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
     };
     file && uploadFile();
   }, [file]);
-  
+
   const handleImageSelect = (e) => {
     const selectedFile = e.target.files[0];
 
@@ -63,7 +62,6 @@ const UpdateStudentProfile = ({ open, onClose }) => {
   };
 
   const handleAdd = async (e) => {
-
     e.preventDefault();
     try {
       const userDocRef = doc(db, `studentdata/${id}/`);
@@ -82,6 +80,7 @@ const UpdateStudentProfile = ({ open, onClose }) => {
         reg: "",
         sem: "",
       });
+      setButtonValue(true)
       onClose();
     } catch (error) {
       console.error(error);
@@ -120,7 +119,8 @@ const UpdateStudentProfile = ({ open, onClose }) => {
                     onChange={(e) => {
                       handleImageSelect(e);
                       setFile(e.target.files[0]);
-                    }}                  />
+                    }}
+                  />
                 </div>
                 <div className="w-[300px]">
                   <div className="mt-2 flex flex-col items-start ">
