@@ -29,6 +29,47 @@ const CreatedClass = () => {
   // };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch all classes
+        const querySnapshot = await getDocs(collection(db, "createClass"));
+        let data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() });
+        });
+
+        //fetched all classes
+        console.log("data : ", data);
+
+        // Find the class where at least one student has a matching uid
+        let matchingClass = Object.keys(data).map((classObj) => {
+          const user = data[classObj];
+          // console.log("each class ",user)
+          let matchingClass2 = Object.keys(user).map((idx) => {
+            if (idx !== "ClassTiming" && idx !== "ClassTeacherID") {
+              const user2 = user[idx];
+              if(user2.uid === iddd){
+                setFetchClasses(user2);
+              }
+              // console.log("inside student uid", user2.uid)
+            }
+          });
+        });
+        // console.log("matchingClass ", matchingClass);
+        // Update state with the matched class (or null if no match)
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Call the async function here
+  }, []); // Make sure to include 'id' in the dependency array
+
+
+
+
+  useEffect(() => {
     // classCreated fetch that students
     const fetchCreatedClass = async () => {
       try {

@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import TodayClasses from "./TodayClasses";
 import ClassJoin from "./ClassJoin";
 import TimeTable from "./TimeTable";
-import JoinedClass from "./JoinedClass";
 import Chat from "./Chat";
 import Home from "./Home";
 import StudentProfile from "./StudentProfile";
@@ -169,8 +168,6 @@ const StudentDashBoard = () => {
           <TimeTable />
         ) : titleName === "joinClass" && profile === false ? (
           <ClassJoin />
-        ) : titleName === "joindClasses" && profile === false ? (
-          <JoinedClass />
         ) : titleName === "chat" && profile === false ? (
           <Chat />
         ) : null}

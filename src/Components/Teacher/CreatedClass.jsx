@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase-config";
+import { useParams } from "react-router-dom";
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
   const [classes, setClasses] = useState([]);
-  const [classTiming, setClassTiming] = useState("");
 
+  const { id } = useParams();
   useEffect(() => {
     const fetchCreatedClass = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "createClass"));
+        console.log("querySnapshot : ",querySnapshot)
         let data = {};
         querySnapshot.forEach((doc) => {
-          data[doc.id] = doc.data();
+          //return only those documents who matches with current teacher id
+          const docData = doc.data();
+          if (docData.ClassTeacherID === id) {
+            data[doc.id] = docData;
+          }
         });
+        console.log("data : ",data)
         setCreatedClass(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -21,13 +28,12 @@ const CreatedClass = () => {
     };
 
     fetchCreatedClass();
-  }, []);
+  }, [id]);
 
   const handleClick = (className) => {
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(createdClass[className]);
-    setClassTiming(classes.ClassTiming);
   };
 
   return (
@@ -68,7 +74,7 @@ const CreatedClass = () => {
             <table className="table-auto m-5 w-[800px]">
               <thead>
                 <tr className="bg-gray-900 text-white h-14">
-                  <th className=" px-4 ">Image</th>
+                  <th className=" px-4 ">-</th>
                   <th>Name</th>
                   <th>Registration</th>
                   <th>Semester</th>
@@ -76,7 +82,7 @@ const CreatedClass = () => {
               </thead>
               <tbody>
                 {Object.keys(classes).map((userId, index) => {
-                  if (userId !== "ClassTiming") {
+                  if (userId !== "ClassTiming" && userId !== "ClassTeacherID") {
                     const user = classes[userId];
                     console.log(user);
                     return (
