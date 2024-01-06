@@ -9,11 +9,11 @@ import { getDownloadURL, ref } from "firebase/storage";
 const StudentProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
-  const { id } = useParams();
   const [userData, setUserData] = useState({});
   const [imageUrl, setImageUrl] = useState("");
   const [buttonValue, setButtonValue] = useState(false);
-
+  const { id } = useParams();
+  
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -44,17 +44,20 @@ const StudentProfile = () => {
     fetchStudentData();
   }, []);
   useEffect(() => {
-    if ('namee' in userData) {
+    if ("namee" in userData) {
       setButtonValue(true);
-  } else {
-      console.log('Object does not contain namee');
-  }
+    } else {
+      console.log("Object does not contain namee");
+    }
   }, [userData]);
   console.log(userData);
   return (
     <>
-      <div className="flex justify-center">
-        <div className="modalcontainer bg-white p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 shadow-2xl">
+      <div className="flex justify-center bg-green-400 ">
+        <div
+          className="modalcontainer bg-white rounded p-10 max-w-[800px] w-[100%] 
+        fixed flex justify-center items-center gap-10 mt-20 shadow-2xl"
+        >
           <div className="modalRight">
             <div className="flex justify-end ml-52 w-[300px] ">
               {buttonValue ? (
@@ -109,7 +112,6 @@ const StudentProfile = () => {
         <AddStudentProfile
           open={addOpenModal}
           onClose={() => setAddOpenModal(false)}
-          // setButtonValue={setButtonValue}
         />
         <UpdateStudentProfile
           sendDataToUpdate={userData}
@@ -120,5 +122,4 @@ const StudentProfile = () => {
     </>
   );
 };
-
 export default StudentProfile;

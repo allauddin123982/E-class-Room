@@ -22,8 +22,8 @@ const TodayClasses = () => {
         let matchingClasses = data.filter((classObj) => {
           return Object.keys(classObj).some((key) => {
             // if (key !== "ClassTiming" && key !== "ClassTeacherID") {
-              const student = classObj[key];
-              return student.uid === id;
+            const student = classObj[key];
+            return student.uid === id;
             // }
             // return false;
           });
@@ -48,11 +48,10 @@ const TodayClasses = () => {
     modal.showModal();
     setClasses(className);
   };
-  
-  console.log("helo world",classes)
+
+  console.log("helo world", classes);
   return (
     <>
-      
       {Object.keys(fetchClasses).length > 0 ? (
         <div className="absolute bg-white top-24 left-96 max-w-[1060px] p-10 rounded-xl shadow-2xl">
           <div className="flex flex-wrap gap-4">
@@ -81,7 +80,6 @@ const TodayClasses = () => {
             </button>
           </div>
           <div className="flex justify-between items-center px-10">
-            
             <p> Class will start at {classes.ClassTiming}</p>
           </div>
           {fetchClasses && Object.keys(classes).length > 0 ? (
@@ -96,7 +94,11 @@ const TodayClasses = () => {
               </thead>
               <tbody>
                 {Object.keys(classes).map((userId, index) => {
-                  if (userId !== "ClassTiming" && userId !== "ClassTeacherID" && userId !== "id") {
+                  if (
+                    userId !== "ClassTiming" &&
+                    userId !== "ClassTeacherID" &&
+                    userId !== "id"
+                  ) {
                     const user = classes[userId];
                     console.log(user);
                     return (

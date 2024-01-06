@@ -55,7 +55,7 @@ const UpdateStudentProfile = ({ open, onClose, sendDataToUpdate }) => {
       //sendDataToUpdate
       const userDocRef = doc(db, `studentdata/${id}/`);
       const docSnapshot = await getDoc(userDocRef);
-     
+
       if (docSnapshot.exists()) {
         const updatedData = {
           ...data,
@@ -86,7 +86,10 @@ const UpdateStudentProfile = ({ open, onClose, sendDataToUpdate }) => {
   return (
     <>
       <div className="overlay bg-gray-300 bg-opacity-80 fixed w-[100%] h-[100%]">
-        <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
+        <div
+          className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20
+         transform translate-x-[67%] translate-y-[30%] bg-white "
+        >
           <div className="modalRight">
             <p
               onClick={onClose}
@@ -99,8 +102,8 @@ const UpdateStudentProfile = ({ open, onClose, sendDataToUpdate }) => {
               <form className="p-2 flex gap-x-10" onSubmit={handleUpdate}>
                 <div className="w-[200px] flex flex-col items-center">
                   <img
-                    src={data.img}
-                    alt=""
+                    src={data.img || sendDataToUpdate.img}
+                    alt="no img"
                     className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
                   />
                   <label htmlFor="file" className="hover:cursor-pointer">

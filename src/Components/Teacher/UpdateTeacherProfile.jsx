@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { db, storage } from "../../firebase-config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 
-const UpdateTeacherProfile = ({ open, onClose }) => {
+const UpdateTeacherProfile = ({ open, onClose, sendDataToUpdate }) => {
   const [data, setData] = useState({});
   const [file, setFile] = useState("");
   const { id } = useParams();
@@ -58,7 +54,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
     try {
       const userDocRef = doc(db, `teacherdata/${id}/`);
       const docSnapshot = await getDoc(userDocRef);
-     
+
       if (docSnapshot.exists()) {
         const updatedData = {
           ...data,
@@ -86,11 +82,14 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
   return (
     <>
       <div className="overlay bg-gray-300 bg-opacity-80 fixed w-[100%] h-[100%]">
-        <div className="modalcontainer p-10 max-w-[700px] w-[100%] fixed flex gap-20 transform translate-x-[67%] translate-y-[30%] bg-white ">
+        <div
+          className="modalcontainer bg-white p-10 max-w-[700px] w-[100%] fixed flex gap-20
+          transform translate-x-[67%] translate-y-[30%]"
+        >
           <div>
             <img
-              src={data.img }
-              alt=""
+              src={data.img || sendDataToUpdate.img}
+              alt="no img"
               className="border-4 w-[150px] h-[150px] mt-4 rounded-full object-fit "
             />
             <label htmlFor="file" className="hover:cursor-pointer">
@@ -123,6 +122,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                     value={data.namee}
                     className="border w-full ps-1"
                     onChange={handleChange}
+                    placeholder={sendDataToUpdate.namee}
                   />
                 </div>
                 <div className="mt-2 flex flex-col items-start">
@@ -133,6 +133,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                     id="qua"
                     type="text"
                     value={data.qua}
+                    placeholder={sendDataToUpdate.qua}
                     className="border w-full ps-1"
                     onChange={handleChange}
                   />
@@ -144,6 +145,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
                     id="des"
                     type="text"
                     value={data.des}
+                    placeholder={sendDataToUpdate.des}
                     className="border w-full ps-1"
                     onChange={handleChange}
                   />
