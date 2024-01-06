@@ -189,12 +189,13 @@ const CreateClass = () => {
     );
     setFoundStudent(foundStudent);
     setSearched(true);
+    
   };
   const showAllStudents = () => {
     setSearched(false);
     setTakeName("");
   };
-
+  console.log(foundStudent)
   return (
     <>
       <div className="bg-white w-[350px] p-2 absolute right-0 top-20 mx-20 flex justify-center gap-3 rounded-lg">
@@ -232,7 +233,6 @@ const CreateClass = () => {
           <input
             type="time"
             className="border p-1"
-            // placeholder="12:00 AM"
             onChange={(e) => {
               setClassTime(e.target.value);
             }}
