@@ -43,14 +43,21 @@ const StudentProfile = () => {
 
     fetchStudentData();
   }, []);
-  console.log(buttonValue);
+  useEffect(() => {
+    if ('namee' in userData) {
+      setButtonValue(true);
+  } else {
+      console.log('Object does not contain namee');
+  }
+  }, [userData]);
+  console.log(userData);
   return (
     <>
-      <div className="flex justify-center bg-red-400">
+      <div className="flex justify-center">
         <div className="modalcontainer bg-white p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 shadow-2xl">
           <div className="modalRight">
             <div className="flex justify-end ml-52 w-[300px] ">
-              {userData ? (
+              {buttonValue ? (
                 <button
                   onClick={() => {
                     setUpdateOpenModal(true);
@@ -102,7 +109,7 @@ const StudentProfile = () => {
         <AddStudentProfile
           open={addOpenModal}
           onClose={() => setAddOpenModal(false)}
-          setButtonValue={setButtonValue}
+          // setButtonValue={setButtonValue}
         />
         <UpdateStudentProfile
           sendDataToUpdate={userData}

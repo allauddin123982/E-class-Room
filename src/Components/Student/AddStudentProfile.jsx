@@ -12,6 +12,7 @@ const UpdateStudentProfile = ({ open, onClose, setButtonValue }) => {
   const { id } = useParams();
 
   //Image set and Upload
+
   useEffect(() => {
     const uploadFile = () => {
       // const name = new Date().getTime() + file.name;
@@ -80,7 +81,7 @@ const UpdateStudentProfile = ({ open, onClose, setButtonValue }) => {
         reg: "",
         sem: "",
       });
-      setButtonValue(true)
+      // setButtonValue(true)
       onClose();
     } catch (error) {
       console.error(error);

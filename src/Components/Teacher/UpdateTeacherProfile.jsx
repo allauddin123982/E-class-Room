@@ -115,7 +115,7 @@ const UpdateTeacherProfile = ({ open, onClose }) => {
               <form className="p-2" onSubmit={handleUpdate}>
                 <div className="mt-2 flex flex-col items-start">
                   <p htmlFor="Name" className="">
-                    Name
+                    Name:
                   </p>
                   <input
                     id="namee"

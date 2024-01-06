@@ -9,7 +9,6 @@ import { useParams } from 'react-router-dom';
 const TeacherProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
-  const [buttonValue, setButtonValue] = useState(true);
   const [userData, setUserData] = useState({});
   const [imageUrl, setImageUrl] = useState("");
   const { id } = useParams();
@@ -26,8 +25,8 @@ const TeacherProfile = () => {
         // Check if the document exists
         if (docSnapshot.exists()) {
           // Access the data using the data() method
-          const userData = docSnapshot.data();
-          setUserData(userData);
+          const teacherData = docSnapshot.data();
+          setUserData(teacherData);
          
           if (userData && userData.img) {
             const storageRef = ref(storage, `teacher/${id}/`);
@@ -45,12 +44,13 @@ const TeacherProfile = () => {
 
     fetchTeacherData();
   }, []);
+  console.log("check teacher dataa", userData)
   return (
     <div className="flex justify-center">
     <div className="modalcontainer p-10 max-w-[800px] w-[100%] fixed flex justify-center items-center gap-10 mt-20 bg-white ">
       <div className="modalRight">
         <div className="flex justify-end ml-52 w-[300px] ">
-          {buttonValue ? (
+          {userData ? (
             <button
               onClick={() => {
                 setUpdateOpenModal(true);
@@ -79,7 +79,7 @@ const TeacherProfile = () => {
                 {userData ? (
                   <div>
                   <div className=" flex gap-x-10 p-4">
-                    <h1>Name</h1>
+                    <h1>Name:</h1>
                     <p>{userData.namee}</p>
                   </div>
                   <div className=" flex gap-x-10 p-4">

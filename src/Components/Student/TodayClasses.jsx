@@ -81,10 +81,7 @@ const TodayClasses = () => {
             </button>
           </div>
           <div className="flex justify-between items-center px-10">
-            <button className="w-[120px] bg-gray-200 p-1 rounded-lg">
-              Start Class
-            </button>
-
+            
             <p> Class will start at {classes.ClassTiming}</p>
           </div>
           {fetchClasses && Object.keys(classes).length > 0 ? (

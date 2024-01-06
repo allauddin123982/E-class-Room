@@ -18,8 +18,6 @@ const StudentDashBoard = () => {
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
   const [notification, setNotification] = useState({ title: "", body: "" });
-  const { currentUser } = useContext(AuthContext);
-  console.log(currentUser);
   const { id } = useParams();
 
   useEffect(() => {
@@ -119,11 +117,7 @@ const StudentDashBoard = () => {
           onClick={() => setProfile(!profile)}
         >
           <button className="font-serif font-bold">Profile</button>
-          <img
-            src={currentUser.img}
-            alt="no img"
-            className="border-2 w-[40px] h-[40px]  rounded-full object-fit"
-          />
+          
         </div>
       </div>
 
