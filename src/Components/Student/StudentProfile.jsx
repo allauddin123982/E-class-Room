@@ -43,6 +43,7 @@ const StudentProfile = () => {
 
     fetchStudentData();
   }, []);
+  
   useEffect(() => {
     if ("namee" in userData) {
       setButtonValue(true);

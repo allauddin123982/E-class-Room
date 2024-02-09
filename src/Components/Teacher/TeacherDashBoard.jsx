@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 import tabs from "../../TeacherTabs.json";
 import TeacherProfile from "./TeacherProfile";
 import CreateClass from "./CreateClass";
-import Home from "./Home"
 import CreatedClass from "./CreatedClass";
-
+import { IoPersonOutline } from "react-icons/io5";
+import { FaSignOutAlt } from "react-icons/fa";
 const TeacherDashBoard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(false);
-  const [titleName, setTitleName] = useState("home");
+  const [titleName, setTitleName] = useState("createdClass");
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const TeacherDashBoard = () => {
           className="flex gap-1 me-10 hover:cursor-pointer"
           onClick={() => setProfile(!profile)}
         >
-          <button className="font-serif font-bold">Profile</button>
+          <button className="font-serif font-bold text-3xl "><IoPersonOutline /></button>
           {/* <img
             src={}
             alt="no img"
@@ -81,20 +81,17 @@ const TeacherDashBoard = () => {
               </li>
             ))}
           </ul>
-
           <button
-            className="flex absolute pb-6 bottom-0 left-6 font-bold"
+            className="flex gap-x-1 absolute justify-center items-center pb-6 bottom-0 left-6 font-bold"
             onClick={signUserOut}
           >
-            Sign out
+            <FaSignOutAlt />Sign out
           </button>
         </div>
       </aside>
       <div >
         {profile ? <TeacherProfile /> : null}
-        {titleName === "home" && profile === false ? (
-          <Home />
-        ) : titleName === "createClass" && profile === false ? (
+        {titleName === "createClass" && profile === false ? (
           <CreateClass />
         ) : titleName === "createdClass" && profile === false ? (
           <CreatedClass /> )
@@ -107,12 +104,6 @@ const TeacherDashBoard = () => {
         // )
         : null}
       </div>
-      <button
-        className="flex absolute pb-6 bottom-0 left-6 font-bold"
-        onClick={signUserOut}
-      >
-        Sign out
-      </button>
       {profile ? <TeacherProfile /> : null}
     </div>
   );

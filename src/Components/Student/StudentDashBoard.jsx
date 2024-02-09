@@ -5,16 +5,14 @@ import TodayClasses from "./TodayClasses";
 import ClassJoin from "./ClassJoin";
 import TimeTable from "./TimeTable";
 import Chat from "./Chat";
-import Home from "./Home";
 import StudentProfile from "./StudentProfile";
 import { signOut } from "firebase/auth";
 import { auth, db, messaging } from "../../firebase-config";
-import { AuthContext } from "../../hooks/AuthContext";
 import { doc, setDoc } from "firebase/firestore";
 import { onMessage, getToken } from "firebase/messaging";
 const StudentDashBoard = () => {
   const navigate = useNavigate();
-  const [titleName, setTitleName] = useState("home");
+  const [titleName, setTitleName] = useState("classes");
   const [userName, setUserName] = useState("");
   const [profile, setProfile] = useState(false);
   const [notification, setNotification] = useState({ title: "", body: "" });
@@ -154,9 +152,7 @@ const StudentDashBoard = () => {
 
       <div>
         {profile ? <StudentProfile /> : null}
-        {titleName === "home" && profile === false ? (
-          <Home />
-        ) : titleName === "classes" && profile === false ? (
+        {titleName === "classes" && profile === false ? (
           <TodayClasses />
         ) : titleName === "timeTable" && profile === false ? (
           <TimeTable />

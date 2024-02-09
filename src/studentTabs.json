@@ -1,10 +1,5 @@
 [
     {
-        "title":"Home",
-        "idd":"home"
-        
-    },
-    {
         "title":"Classes",
         "idd":"classes"
     },

@@ -1,9 +1,5 @@
 [
     {
-        "title":"Home",
-        "idd":"home"
-    },
-    {
         "title":"Create Class",
         "idd":"createClass"
     },

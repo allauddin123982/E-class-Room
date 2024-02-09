@@ -13,11 +13,11 @@ const CreateClass = () => {
   const [takeName, setTakeName] = useState("");
   const [foundStudent, setFoundStudent] = useState(null);
   const { id } = useParams();
-
+  
+  //fetchStudents
   useEffect(() => {
     const fetchStudentData = async () => {
       let list = [];
-
       try {
         const querySnapshot = await getDocs(collection(db, `studentdata/`));
         querySnapshot.forEach((doc) => {
@@ -183,7 +183,7 @@ const CreateClass = () => {
   };
 
   const searchStudentFunc = () => {
-    console.log(takeName);
+    // console.log(takeName);
     const foundStudent = fetchStudentData.find(
       (student) => student.reg.toLowerCase() === takeName.toLowerCase()
     );
@@ -195,10 +195,10 @@ const CreateClass = () => {
     setSearched(false);
     setTakeName("");
   };
-  console.log(foundStudent)
+  // console.log(foundStudent)
   return (
     <>
-      <div className="bg-white w-[350px] p-2 absolute right-0 top-20 mx-20 flex justify-center gap-3 rounded-lg">
+      <div className="bg-white shadow-lg  border-black w-[350px] p-2 absolute right-0 top-20 mx-20 flex justify-center gap-3 rounded-lg">
         <input
           type="text"
           value={takeName}
@@ -212,7 +212,7 @@ const CreateClass = () => {
           onClick={searchStudentFunc}
           className="hover:border border-black p-1 bg-gray-200 w-[40px] text-center flex justify-center items-center rounded-lg"
         >
-          <IoSearch className="text-2xl " />
+          <IoSearch className="text-xl " />
         </button>
         <button
           onClick={showAllStudents}

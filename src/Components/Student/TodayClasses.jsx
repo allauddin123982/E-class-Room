@@ -16,20 +16,17 @@ const TodayClasses = () => {
         querySnapshot.forEach((doc) => {
           data.push({ id: doc.id, ...doc.data() });
         });
-        console.log("data : ", data);
+        // console.log("data : ", data);
 
         // Find classes where at least one student has a matching uid
         let matchingClasses = data.filter((classObj) => {
           return Object.keys(classObj).some((key) => {
-            // if (key !== "ClassTiming" && key !== "ClassTeacherID") {
             const student = classObj[key];
             return student.uid === id;
-            // }
-            // return false;
           });
         });
-
-        console.log("matchingClasses : ", matchingClasses);
+        // console.log("matchingClasses : ", matchingClasses);
+        
         // Update state with the matched classes (or an empty array if no match)
         setFetchClasses(matchingClasses);
       } catch (error) {
@@ -40,16 +37,16 @@ const TodayClasses = () => {
     fetchData(); // Call the async function here
   }, [id]); // Make sure to include 'iddd' in the dependency array
 
-  console.log("fetched ", fetchClasses);
+  // console.log("fetched ", fetchClasses);
 
   const handleClick = (className) => {
-    console.log("fetchClasses:", className);
+    // console.log("fetchClasses:", className);
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(className);
   };
 
-  console.log("helo world", classes);
+  // console.log("helo world", classes);
   return (
     <>
       {Object.keys(fetchClasses).length > 0 ? (

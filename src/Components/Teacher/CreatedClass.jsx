@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { useParams } from "react-router-dom";
+
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
   const [classes, setClasses] = useState([]);
-
+  const [className, setClassName] = useState("");
   const { id } = useParams();
+
   useEffect(() => {
     const fetchCreatedClass = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "createClass"));
-        console.log("querySnapshot : ",querySnapshot)
         let data = {};
         querySnapshot.forEach((doc) => {
           //return only those documents who matches with current teacher id
@@ -20,7 +27,6 @@ const CreatedClass = () => {
             data[doc.id] = docData;
           }
         });
-        console.log("data : ",data)
         setCreatedClass(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -30,10 +36,33 @@ const CreatedClass = () => {
     fetchCreatedClass();
   }, [id]);
 
-  const handleClick = (className) => {
+  //open class
+  const handleClick = (classSelected) => {
+    setClassName(classSelected);
     const modal = document.getElementById("modal");
     modal.showModal();
-    setClasses(createdClass[className]);
+    setClasses(createdClass[classSelected]);
+  };
+
+  //Remove student from class
+  const removeStudent = async (student) => {
+    const studentIdToRemove = student.id;
+
+    // Assuming `classes` is a reference to your Firestore collection
+    const snapshot = await classes.where("id", "==", studentIdToRemove).get();
+    if (snapshot.empty) {
+      console.log("No matching document.");
+      return;
+    }
+
+    snapshot.forEach(async (doc) => {
+      try {
+        await doc.ref.delete();
+        console.log("Document successfully deleted!");
+      } catch (error) {
+        console.error("Error removing document: ", error);
+      }
+    });
   };
 
   return (
@@ -47,7 +76,9 @@ const CreatedClass = () => {
                 className="w-[150px] h-[70px] p-4 rounded-md shadow-md bg-slate-200 hover:border-b-2 border-black cursor-pointer"
                 onClick={() => handleClick(className)}
               >
-                <h2 className="text-lg font-semibold">{className}</h2>
+                <h2 className="text-lg font-semibold text-blue-600">
+                  {className}
+                </h2>
               </div>
             ))}
           </div>
@@ -78,13 +109,13 @@ const CreatedClass = () => {
                   <th>Name</th>
                   <th>Registration</th>
                   <th>Semester</th>
+                  <th>Remove stds</th>
                 </tr>
               </thead>
               <tbody>
                 {Object.keys(classes).map((userId, index) => {
                   if (userId !== "ClassTiming" && userId !== "ClassTeacherID") {
                     const user = classes[userId];
-                    console.log(user);
                     return (
                       <tr
                         key={index}
@@ -102,6 +133,12 @@ const CreatedClass = () => {
                         <td>{user.namee}</td>
                         <td>{user.reg}</td>
                         <td>{user.sem}</td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => removeStudent(user)}
+                        >
+                          x
+                        </td>
                       </tr>
                     );
                   }
