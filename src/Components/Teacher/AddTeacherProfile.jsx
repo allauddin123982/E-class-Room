@@ -68,7 +68,6 @@ const AddTeacherProfile = ({ open, onClose }) => {
     e.preventDefault();
     try {
       const userDocRef = doc(db, `teacherdata/${id}/`);
-
       await setDoc(
         userDocRef,
         {
