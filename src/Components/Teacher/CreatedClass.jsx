@@ -41,20 +41,10 @@ const CreatedClass = () => {
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(createdClass[classSelected]);
-    // let s = Object.keys(classes).map((userId, index) => {
-    //   if (userId !== "ClassTiming" && userId !== "ClassTeacherID") {
-    //     const user = classes[userId];
-    //     return user
-    //   }
-    // })
-    // setStdList(s)
-    const students = Object.values(classes);
-
-    setStdList(students);
   };
+
   useEffect(()=>{
     const students = Object.values(classes);
-
     setStdList(students);
   },[classes])
   //Remove student from class
@@ -258,7 +248,10 @@ const CreatedClass = () => {
                 </p>
               ) : null}
             </div>
-            {/* <p> Class will start at {classes.ClassTiming}</p> */}
+          </div>
+          <div>
+
+            <p> Class will start at {classes.ClassTiming}</p>
           </div>
           {classes && Object.keys(classes).length > 0 ? (
             <table className="table-auto m-5 w-[800px]">

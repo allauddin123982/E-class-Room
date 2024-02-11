@@ -60,7 +60,7 @@ const TodayClasses = () => {
                   className="w-[150px] h-[70px] p-4 rounded-md shadow-md bg-slate-200 hover:border-b-2 border-black cursor-pointer"
                   onClick={() => handleClick(newClass)}
                 >
-                  <h2 className="text-lg font-semibold">{newClass.id}</h2>
+                  <h2 className="text-lg font-semibold text-blue-500">{newClass.id}</h2>
                 </div>
               );
             })}
