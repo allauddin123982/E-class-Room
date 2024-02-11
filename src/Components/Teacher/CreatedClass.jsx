@@ -11,7 +11,7 @@ const CreatedClass = () => {
   const [className, setClassName] = useState("");
   const [classTimers, setClassTimers] = useState({});
   const [stdList, setStdList] = useState([]);
-  
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const CreatedClass = () => {
   const removeStudent = async (student) => {
     const studentIdToRemove = student.id;
   };
-  
+
   // Set up a global interval for checking notifications
   useEffect(() => {
     const globalTimerId = setInterval(() => {
@@ -62,7 +62,7 @@ const CreatedClass = () => {
       clearInterval(globalTimerId);
     };
   }, [classTimers]);
-  
+
   // Function to get 5 minutes before the class time
   function getTimeBefore(timeString) {
     console.log("getTimeBefore");
@@ -96,8 +96,7 @@ const CreatedClass = () => {
       .toString()
       .padStart(2, "0")}`;
   }
-  
-  
+
   // Function to send a notification to a specific student
   const sendNotificationToStudent = (student, notify) => {
     console.log("Time matched");
@@ -124,7 +123,7 @@ const CreatedClass = () => {
       })
       .catch((err) => console.log(err));
   };
-  
+
   const getCurrentTime = () => {
     const tdime = new Date();
     const hr = tdime.getHours();
@@ -164,7 +163,6 @@ const CreatedClass = () => {
     }
   };
 
-  
   const scheduleClass = async (e) => {
     e.preventDefault();
     try {
@@ -176,15 +174,14 @@ const CreatedClass = () => {
         },
         { merge: true }
       );
+      // Save the timer for the current class
+      setClassTimers((prevTimers) => ({
+        ...prevTimers,
+        [classTime]: true, // You can use any value to indicate that the timer is active
+      }));
     } catch (error) {
       console.log(error);
     }
-
-    // Save the timer for the current class
-    setClassTimers((prevTimers) => ({
-      ...prevTimers,
-      [classTime]: true, // You can use any value to indicate that the timer is active
-    }));
   };
 
   return (
