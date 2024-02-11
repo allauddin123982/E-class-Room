@@ -52,12 +52,9 @@ const TeacherDashBoard = () => {
           className="flex gap-1 me-10 hover:cursor-pointer"
           onClick={() => setProfile(!profile)}
         >
-          <button className="font-serif font-bold text-3xl "><IoPersonOutline /></button>
-          {/* <img
-            src={}
-            alt="no img"
-            className="border-2 w-[40px] h-[40px]  rounded-full object-fit"
-          /> */}
+          <button className="font-bold text-2xl">
+            <IoPersonOutline />
+          </button>
         </div>
       </div>
       <aside
@@ -85,24 +82,25 @@ const TeacherDashBoard = () => {
             className="flex gap-x-1 absolute justify-center items-center pb-6 bottom-0 left-6 font-bold"
             onClick={signUserOut}
           >
-            <FaSignOutAlt />Sign out
+            <FaSignOutAlt />
+            Sign out
           </button>
         </div>
       </aside>
-      <div >
+      <div>
         {profile ? <TeacherProfile /> : null}
         {titleName === "createClass" && profile === false ? (
           <CreateClass />
         ) : titleName === "createdClass" && profile === false ? (
-          <CreatedClass /> )
-        // ) : titleName === "joinClass" && profile === false ? (
+          <CreatedClass />
+        ) : // ) : titleName === "joinClass" && profile === false ? (
         //   <ClassJoin />
         // ) : titleName === "joindClasses" && profile === false ? (
         //   <JoinedClass />
         // ) : titleName === "chat" && profile === false ? (
         //   <Chat />
         // )
-        : null}
+        null}
       </div>
       {profile ? <TeacherProfile /> : null}
     </div>

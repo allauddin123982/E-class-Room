@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import AddTeacherProfile from "../Teacher/AddTeacherProfile";
 import UpdateTeacherProfile from "./UpdateTeacherProfile";
 import { doc, getDoc } from "firebase/firestore";
-import { db, storage } from "../../firebase-config";
-import { getDownloadURL, ref } from "firebase/storage";
+import { db } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 
 const TeacherProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
   const [userData, setUserData] = useState({});
-  const [imageUrl, setImageUrl] = useState("");
+  // const [imageUrl, setImageUrl] = useState("");
   const [buttonValue, setButtonValue] = useState(false);
 
   const { id } = useParams();
@@ -30,11 +29,11 @@ const TeacherProfile = () => {
           const teacherData = docSnapshot.data();
           setUserData(teacherData);
 
-          if (userData && userData.img) {
-            const storageRef = ref(storage, `teacher/${id}/`);
-            const url = await getDownloadURL(storageRef);
-            setImageUrl(url);
-          }
+          // if (userData && userData.img) {
+          //   const storageRef = ref(storage, `teacher/${id}/`);
+          //   const url = await getDownloadURL(storageRef);
+          //   setImageUrl(url);
+          // }
         } else {
           console.log("Document does not exist");
         }
@@ -44,7 +43,8 @@ const TeacherProfile = () => {
     };
 
     fetchTeacherData();
-  }, []);
+  }, [id]);
+  
   useEffect(() => {
     if ("namee" in userData) {
       setButtonValue(true);

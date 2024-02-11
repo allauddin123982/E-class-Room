@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import tabs from "../../studentTabs.json";
 import { useNavigate, useParams } from "react-router-dom";
 import TodayClasses from "./TodayClasses";
@@ -10,6 +10,9 @@ import { signOut } from "firebase/auth";
 import { auth, db, messaging } from "../../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
 import { onMessage, getToken } from "firebase/messaging";
+import { FaSignOutAlt } from "react-icons/fa";
+import { IoPersonOutline } from "react-icons/io5";
+
 const StudentDashBoard = () => {
   const navigate = useNavigate();
   const [titleName, setTitleName] = useState("classes");
@@ -58,7 +61,7 @@ const StudentDashBoard = () => {
         vapidKey:
           "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8",
       }); // Create a notification
-      console.log("new token generated ", token);
+      // console.log("new token generated ", token);
       //send this token to db
       updateMessagingTokenInFirestore(token);
     } else if (permission === "denied") {
@@ -114,8 +117,9 @@ const StudentDashBoard = () => {
           className="flex gap-1 me-10 hover:cursor-pointer"
           onClick={() => setProfile(!profile)}
         >
-          <button className="font-serif font-bold">Profile</button>
-          
+          <button className="font-bold text-2xl">
+            <IoPersonOutline />
+          </button>
         </div>
       </div>
 
@@ -142,9 +146,10 @@ const StudentDashBoard = () => {
           </ul>
 
           <button
-            className="flex absolute pb-6 bottom-0 left-6 font-bold"
+            className="flex items-center gap-x-1 absolute pb-6 bottom-0 left-6 font-bold"
             onClick={signUserOut}
           >
+            <FaSignOutAlt />
             Sign out
           </button>
         </div>

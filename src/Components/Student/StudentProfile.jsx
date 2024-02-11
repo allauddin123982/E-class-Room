@@ -1,19 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateStudentProfile from "./UpdateStudentProfile";
 import AddStudentProfile from "./AddStudentProfile";
-import { db, storage } from "../../firebase-config";
+import { db } from "../../firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
-import { getDownloadURL, ref } from "firebase/storage";
 
 const StudentProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
   const [userData, setUserData] = useState({});
-  const [imageUrl, setImageUrl] = useState("");
+  // const [imageUrl, setImageUrl] = useState("");
   const [buttonValue, setButtonValue] = useState(false);
   const { id } = useParams();
-  
+
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
@@ -26,13 +25,13 @@ const StudentProfile = () => {
         // Check if the document exists
         if (docSnapshot.exists()) {
           // Access the data using the data() method
-          const userData = docSnapshot.data();
-          setUserData(userData);
-          if (userData && userData.img) {
-            const storageRef = ref(storage, `student/${id}/`);
-            const url = await getDownloadURL(storageRef);
-            setImageUrl(url);
-          }
+          const stdData = docSnapshot.data();
+          setUserData(stdData);
+          // if (userData && userData.img) {
+          //   const storageRef = ref(storage, `student/${id}/`);
+          //   const url = await getDownloadURL(storageRef);
+          //   setImageUrl(url);
+          // }
         } else {
           console.log("Document does not exist");
         }
@@ -42,8 +41,8 @@ const StudentProfile = () => {
     };
 
     fetchStudentData();
-  }, []);
-  
+  }, [id]);
+
   useEffect(() => {
     if ("namee" in userData) {
       setButtonValue(true);
@@ -51,10 +50,10 @@ const StudentProfile = () => {
       console.log("Object does not contain namee");
     }
   }, [userData]);
-  console.log(userData);
+  console.log("helo ",userData);
   return (
     <>
-      <div className="flex justify-center bg-green-400 ">
+      <div className="flex justify-center">
         <div
           className="modalcontainer bg-white rounded p-10 max-w-[800px] w-[100%] 
         fixed flex justify-center items-center gap-10 mt-20 shadow-2xl"
