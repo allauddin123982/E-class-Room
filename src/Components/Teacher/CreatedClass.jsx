@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
   const [classes, setClasses] = useState([]);
-  const [className, setClassName] = useState("");
+  const [settingDate, setSettingDate] = useState(false);
+  // const [className, setClassName] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -38,7 +33,7 @@ const CreatedClass = () => {
 
   //open class
   const handleClick = (classSelected) => {
-    setClassName(classSelected);
+    // setClassName(classSelected);
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(createdClass[classSelected]);
@@ -98,8 +93,21 @@ const CreatedClass = () => {
             <button className="w-[120px] bg-gray-200 p-1 rounded-lg">
               Start Class
             </button>
+            <div>
+              <p
+                className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={() => setSettingDate(!settingDate)}
+              >
+                Schedule Class
+              </p>
 
-            <p> Class will start at {classes.ClassTiming}</p>
+              {settingDate ? (
+                <>
+                  <input type="time" />
+                </>
+              ) : null}
+            </div>
+            {/* <p> Class will start at {classes.ClassTiming}</p> */}
           </div>
           {classes && Object.keys(classes).length > 0 ? (
             <table className="table-auto m-5 w-[800px]">
