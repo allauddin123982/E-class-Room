@@ -197,7 +197,8 @@ const CreateClass = () => {
     setSearched(false);
     setTakeName("");
   };
-  // console.log(foundStudent)
+
+  // console.log({stdList})
   return (
     <>
       <div className="bg-white shadow-lg  border-black w-[350px] p-2 absolute right-0 top-20 mx-20 flex justify-center gap-3 rounded-lg">

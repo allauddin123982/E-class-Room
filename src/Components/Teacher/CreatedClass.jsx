@@ -41,6 +41,16 @@ const CreatedClass = () => {
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(createdClass[classSelected]);
+    // let s = Object.keys(classes).map((userId, index) => {
+    //   if (userId !== "ClassTiming" && userId !== "ClassTeacherID") {
+    //     const user = classes[userId];
+    //     return user
+    //   }
+    // })
+    // setStdList(s)
+    const students = Object.values(classes);
+
+    setStdList(students);
   };
 
   //Remove student from class
@@ -125,6 +135,7 @@ const CreatedClass = () => {
   };
 
   const getCurrentTime = () => {
+    console.log("getCurrentTime");
     const tdime = new Date();
     const hr = tdime.getHours();
     const min = tdime.getMinutes();
@@ -144,6 +155,7 @@ const CreatedClass = () => {
       const currTime = getCurrentTime();
 
       if (currTime === notificationTime) {
+        console.log("=== k andr");
         // Notify each student
         stdList.forEach((student) => {
           sendNotificationToStudent(student, classTime);
@@ -183,6 +195,7 @@ const CreatedClass = () => {
       console.log(error);
     }
   };
+  console.log("Moiz...  ", stdList);
 
   return (
     <>
