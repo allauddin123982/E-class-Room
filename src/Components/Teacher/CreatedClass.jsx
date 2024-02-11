@@ -52,7 +52,11 @@ const CreatedClass = () => {
 
     setStdList(students);
   };
+  useEffect(()=>{
+    const students = Object.values(classes);
 
+    setStdList(students);
+  },[classes])
   //Remove student from class
   const removeStudent = async (student) => {
     const studentIdToRemove = student.id;
