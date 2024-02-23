@@ -7,13 +7,15 @@ const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
   const [classes, setClasses] = useState([]);
   const [settingDate, setSettingDate] = useState(false);
+  const [seeStudents, setSeeStudents] = useState(false);
   const [classTime, setClassTime] = useState("");
+  const [classDate, setClassDate] = useState("");
+  const [classType, setClassType] = useState("");
   const [className, setClassName] = useState("");
   const [classTimers, setClassTimers] = useState({});
   const [stdList, setStdList] = useState([]);
 
   const { id } = useParams();
-
   useEffect(() => {
     const fetchCreatedClass = async () => {
       try {
@@ -42,11 +44,18 @@ const CreatedClass = () => {
     modal.showModal();
     setClasses(createdClass[classSelected]);
   };
+  //open model2
+  const handleModelTwo = () => {
+    const modal = document.getElementById("modal2");
+    modal.showModal();
+    setSettingDate(!settingDate);
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     const students = Object.values(classes);
     setStdList(students);
-  },[classes])
+  }, [classes]);
+
   //Remove student from class
   const removeStudent = async (student) => {
     const studentIdToRemove = student.id;
@@ -149,7 +158,6 @@ const CreatedClass = () => {
       const currTime = getCurrentTime();
 
       if (currTime === notificationTime) {
-        console.log("=== k andr");
         // Notify each student
         stdList.forEach((student) => {
           sendNotificationToStudent(student, classTime);
@@ -177,6 +185,8 @@ const CreatedClass = () => {
         userDocRef,
         {
           ClassTiming: classTime,
+          ClassDate: classDate,
+          ClassType: classType,
         },
         { merge: true }
       );
@@ -189,7 +199,6 @@ const CreatedClass = () => {
       console.log(error);
     }
   };
-  console.log("Moiz...  ", stdList);
 
   return (
     <>
@@ -213,95 +222,151 @@ const CreatedClass = () => {
         <p className="text-red-600 text-2xl">No classes</p>
       )}
 
-      <dialog id="modal" className="shadow-2xl rounded-lg">
-        <div className="w-[850px] h-[550px]">
-          <div className="flex justify-end p-4">
+      <dialog id="modal" className="ml-72 rounded-lg w-[1200px] h-[660px]">
+        <div className="header flex justify-between items-center m-2">
+          <div className="flex gap-10 ">
+            {/* schedule class button */}
+            <div className="">
+              <button
+                className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={handleModelTwo}
+              >
+                Schedule Class
+              </button>
+            </div>
+            {/* start class now button */}
+            <div className="">
+              <button className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg">
+                Start now
+              </button>
+            </div>
+
+            {/* check students button */}
+            <div className="">
+              <button
+                className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={() => setSeeStudents(!seeStudents)}
+              >
+                Check Students
+              </button>
+            </div>
+          </div>
+
+          {/* closing button */}
+          <div className="p-4">
             <button onClick={() => document.getElementById("modal").close()}>
               X
             </button>
           </div>
-          <div className="flex justify-between items-center px-10">
-            <button className="w-[120px] bg-gray-200 p-1 rounded-lg">
-              Start Class
-            </button>
-            <div>
-              <p
-                className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
-                onClick={() => setSettingDate(!settingDate)}
-              >
-                Schedule Class
-              </p>
-              {settingDate ? (
-                <p className="mt-2">
-                  <input
-                    type="time"
-                    onChange={(e) => {
-                      setClassTime(e.target.value);
-                    }}
-                  />
-                  <button
-                    className=" bg-gray-200 p-1 rounded-lg hover:border border-black"
-                    onClick={scheduleClass}
-                  >
-                    done
-                  </button>
-                </p>
-              ) : null}
-            </div>
-          </div>
-          <div>
-
-            <p> Class will start at {classes.ClassTiming}</p>
-          </div>
-          {classes && Object.keys(classes).length > 0 ? (
-            <table className="table-auto m-5 w-[800px]">
-              <thead>
-                <tr className="bg-gray-900 text-white h-14">
-                  <th className=" px-4 ">-</th>
-                  <th>Name</th>
-                  <th>Registration</th>
-                  <th>Semester</th>
-                  <th>Remove stds</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.keys(classes).map((userId, index) => {
-                  if (userId !== "ClassTiming" && userId !== "ClassTeacherID") {
-                    const user = classes[userId];
-                    return (
-                      <tr
-                        key={index}
-                        className="border-b even:bg-gray-100 rounded-2xl"
+        </div>
+        
+        {/* students Table */}
+        {seeStudents && classes && Object.keys(classes).length > 0 ? (
+          <table className="table-auto m-5 w-[800px] border">
+            <thead>
+              <tr className="bg-gray-900 text-white h-14">
+                <th className=" px-4 ">-</th>
+                <th>Name</th>
+                <th>Registration</th>
+                <th>Semester</th>
+                <th>Remove stds</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(classes).map((userId, index) => {
+                if (
+                  userId !== "ClassTiming" &&
+                  userId !== "ClassTeacherID" &&
+                  userId !== "ClassDate" &&
+                  userId !== "ClassType"
+                ) {
+                  const user = classes[userId];
+                  return (
+                    <tr
+                      key={index}
+                      className="border-b even:bg-gray-100 rounded-2xl"
+                    >
+                      <td className="p-1 flex justify-center">
+                        <p>
+                          <img
+                            src={user.img}
+                            alt="no img"
+                            className="w-12 h-12 rounded-full "
+                          />
+                        </p>
+                      </td>
+                      <td>{user.namee}</td>
+                      <td>{user.reg}</td>
+                      <td>{user.sem}</td>
+                      <td
+                        className="cursor-pointer"
+                        onClick={() => removeStudent(user)}
                       >
-                        <td className="p-1 flex justify-center">
-                          <p>
-                            <img
-                              src={user.img}
-                              alt="no img"
-                              className="w-12 h-12 rounded-full "
-                            />
-                          </p>
-                        </td>
-                        <td>{user.namee}</td>
-                        <td>{user.reg}</td>
-                        <td>{user.sem}</td>
-                        <td
-                          className="cursor-pointer"
-                          onClick={() => removeStudent(user)}
-                        >
-                          x
-                        </td>
-                      </tr>
-                    );
-                  }
+                        x
+                      </td>
+                    </tr>
+                  );
+                }
 
-                  return null; // Skip rendering for ClassTiming
-                })}
-              </tbody>
-            </table>
-          ) : (
-            <p>No user data available</p>
-          )}
+                return null; // Skip rendering for ClassTiming
+              })}
+            </tbody>
+          </table>
+        ) : null}
+      </dialog>
+
+      <dialog id="modal2" className="rounded-lg w-[400px] h-[320px]">
+        <div className="header bg-blue-500 flex justify-between items-center ">
+          <p className="px-4 text-white font-bold tracking-wider">Schedule</p>
+          {/* closing button */}
+          <span className="p-4 text-white">
+            <button onClick={() => document.getElementById("modal2").close()}>
+              X
+            </button>
+          </span>
+        </div>
+        <div className="p-4 text-lg ">
+          {settingDate ? (
+            <>
+              <p className="flex gap-4">
+                Add a title :
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    setClassType(e.target.value);
+                  }}
+                  className="border"
+                />
+              </p>
+              <br />
+              <p className="flex gap-4">
+                Date:
+                <input
+                  type="date"
+                  onChange={(e) => {
+                    setClassDate(e.target.value);
+                  }}
+                />
+              </p>
+              <br />
+              <p className="flex gap-4">
+                Time:
+                <input
+                  type="time"
+                  onChange={(e) => {
+                    setClassTime(e.target.value);
+                  }}
+                />
+              </p>
+              <br />
+              <button
+                className="w-[200px] bg-gray-200 p-1 rounded-lg hover:border border-black"
+                onClick={scheduleClass}
+              >
+                done
+              </button>
+            </>
+          ) : null}
         </div>
       </dialog>
     </>
