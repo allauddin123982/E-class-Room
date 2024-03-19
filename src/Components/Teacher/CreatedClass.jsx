@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../firebase-config";
 import { useParams } from "react-router-dom";
+import VideoCall from "../videoCall";
 
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
@@ -14,6 +15,7 @@ const CreatedClass = () => {
   const [className, setClassName] = useState("");
   const [classTimers, setClassTimers] = useState({});
   const [stdList, setStdList] = useState([]);
+  const [inCall, setInCall] = useState(false);
 
   const { id } = useParams();
   useEffect(() => {
@@ -234,11 +236,20 @@ const CreatedClass = () => {
                 Schedule Class
               </button>
             </div>
+
             {/* start class now button */}
             <div className="">
-              <button className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg">
-                Start now
-              </button>
+              {inCall ? (
+                <VideoCall setInCall={setInCall} />
+              ) : (
+                <button
+                  variant="contained"
+                  className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                  onClick={() => setInCall(true)}
+                >
+                  Start Class
+                </button>
+              )}
             </div>
 
             {/* check students button */}
@@ -259,7 +270,7 @@ const CreatedClass = () => {
             </button>
           </div>
         </div>
-        
+
         {/* students Table */}
         {seeStudents && classes && Object.keys(classes).length > 0 ? (
           <table className="table-auto m-5 w-[800px] border">

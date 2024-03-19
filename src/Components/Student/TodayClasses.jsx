@@ -3,12 +3,14 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 import { SlCalender } from "react-icons/sl";
+import VideoCall from "../videoCall";
 const TodayClasses = () => {
   const [fetchClasses, setFetchClasses] = useState([]);
   const [classes, setClasses] = useState([]);
   const [seeStudents, setSeeStudents] = useState(false);
   const [classTeacherID, setClassTeacherID] = useState("");
   const [userData, setUserData] = useState({});
+  const [inCall, setInCall] = useState(false);
   const { id } = useParams();
   useEffect(() => {
     const fetchData = async () => {
@@ -125,9 +127,18 @@ const TodayClasses = () => {
             </div>
             {/* join class button */}
             <div className="">
-              <button className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg">
-                Join Class
-              </button>
+             
+              {inCall ? (
+                <VideoCall setInCall={setInCall} />
+              ) : (
+                <button
+                  variant="contained"
+                  className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                  onClick={() => setInCall(true)}
+                >
+                 Join Class
+                </button>
+              )}
             </div>
           </div>
           {/* closing button */}
