@@ -19,7 +19,7 @@ export default function Video(props) {
             <p>{user.uid}</p>
               if (user.videoTrack) {
             return (
-              <div className={`grid grid -cols-${divSpacing}`} key={user.uid}>
+              <div className={`grid grid-cols-${divSpacing}`} key={user.uid}>
                 {user.uid}
                 <AgoraVideoPlayer
                   videoTrack={user.videoTrack}
