@@ -35,19 +35,27 @@ export default function Controls(props) {
 
   return (
     <div className="flex items-center space-x-2 border">
-      <div item>
+      <div>
         <button
           variant="contained"
-          className={trackState.audio ? "text-blue-500 p-2 text-2xl" : "text-red-500 p-2 text-2xl"}
+          className={
+            trackState.audio
+              ? "text-blue-500 p-2 text-2xl"
+              : "text-red-500 p-2 text-2xl"
+          }
           onClick={() => mute("audio")}
         >
           {trackState.audio ? <FaMicrophone /> : <IoIosMicOff />}
         </button>
       </div>
-      <div item>
+      <div>
         <button
           variant="contained"
-          className={trackState.video ? "text-blue-500 p-2 text-2xl " : "text-red-500 p-2 text-2xl "}
+          className={
+            trackState.video
+              ? "text-blue-500 p-2 text-2xl "
+              : "text-red-500 p-2 text-2xl "
+          }
           onClick={() => mute("video")}
         >
           {trackState.video ? <BsCameraVideoFill /> : <BsCameraVideoOffFill />}
@@ -60,7 +68,6 @@ export default function Controls(props) {
           className="text-2xl"
           onClick={() => leaveChannel()}
         >
-          
           <IoMdExit />
         </button>
       </div>

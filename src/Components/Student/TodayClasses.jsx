@@ -1,9 +1,19 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../../firebase-config";
+import React, { useContext, useEffect, useState } from "react";
+import { db, storage } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 import { SlCalender } from "react-icons/sl";
 import VideoCall from "../videoCall";
+import {
+  getDownloadURL,
+  list,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
+import { IoCloudDownloadOutline } from "react-icons/io5";
+import { IoCloudUploadOutline } from "react-icons/io5";
+
 const TodayClasses = () => {
   const [fetchClasses, setFetchClasses] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -11,7 +21,16 @@ const TodayClasses = () => {
   const [classTeacherID, setClassTeacherID] = useState("");
   const [userData, setUserData] = useState({});
   const [inCall, setInCall] = useState(false);
+  const [assignment, setAssignment] = useState([]);
+  const [assignmentValue, setAssignmentValue] = useState(false);
+  const [assignmentFile, setAssignmentFile] = useState(null);
+
   const { id } = useParams();
+
+  let teacherIDs = fetchClasses.map((cls) => cls.ClassTeacherID);
+  teacherIDs = teacherIDs.shift();
+  const assigRef = ref(storage, `thrAssignments/${classes.id}/`);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,8 +40,7 @@ const TodayClasses = () => {
         querySnapshot.forEach((doc) => {
           data.push({ id: doc.id, ...doc.data() });
         });
-        // console.log("data : ", data);
-
+      
         // Find classes where at least one student has a matching uid
         let matchingClasses = data.filter((classObj) => {
           return Object.keys(classObj).some((key) => {
@@ -30,8 +48,6 @@ const TodayClasses = () => {
             return student.uid === id;
           });
         });
-        // console.log("matchingClasses : ", matchingClasses);
-
         // Update state with the matched classes (or an empty array if no match)
         setFetchClasses(matchingClasses);
       } catch (error) {
@@ -39,13 +55,10 @@ const TodayClasses = () => {
       }
     };
 
-    fetchData(); // Call the async function here
-  }, [id]); // Make sure to include 'iddd' in the dependency array
-
-  // console.log("fetched ", fetchClasses);
+    fetchData();
+  }, [id]); 
 
   const handleClick = (className) => {
-    // console.log("fetchClasses:", className);
     const modal = document.getElementById("modal");
     modal.showModal();
     setClasses(className);
@@ -87,7 +100,53 @@ const TodayClasses = () => {
     fetchTeacherData();
   }, [classTeacherID]);
 
-  console.log("helo teaher ", userData);
+  //download teacher assignment
+  useEffect(() => {
+    listAll(assigRef).then((response) => {
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          const fileName = item.name;
+          setAssignment((prev) => [...prev, { url, fileName }]);
+        });
+      });
+    });
+    return () => {
+      console.log("Component is unmounting. Cleanup tasks performed.");
+    };
+  }, [assignmentValue]);
+
+  const downloadAssignment = () => {
+    setAssignmentValue(!assignmentValue);
+    const modal = document.getElementById("assignmentModal");
+    modal.showModal();
+  };
+
+  //student uploading assignment
+  const uploadAssignment = () => {
+    if (assignmentFile === null) return;
+    const fileRef = ref(storage,`stdAssignments/${classes.id}/${id}/${assignmentFile.name}`);
+    uploadBytes(fileRef, assignmentFile).then(() => {
+        alert("Uploaded");
+        // Close the modal
+        let closing = document.getElementById("modal3");
+        closing.close();
+      })
+      .catch((error) => {
+        console.error("Error uploading assignment:", error);
+      });
+  };
+
+  const handleModelThree = () => {
+    const modal = document.getElementById("modal3");
+    modal.showModal();
+  };
+
+  const handleModalClose = () => {
+    setAssignment([]);
+    document.getElementById("assignmentModal").close();
+  };
+  // console.log("helo teaher ", students);
+
   return (
     <>
       {Object.keys(fetchClasses).length > 0 ? (
@@ -127,7 +186,6 @@ const TodayClasses = () => {
             </div>
             {/* join class button */}
             <div className="">
-             
               {inCall ? (
                 <VideoCall setInCall={setInCall} />
               ) : (
@@ -136,11 +194,33 @@ const TodayClasses = () => {
                   className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
                   onClick={() => setInCall(true)}
                 >
-                 Join Class
+                  Join Class
                 </button>
               )}
             </div>
+
+            {/* download assignment */}
+            <div className="">
+              <button
+                variant="contained"
+                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={downloadAssignment}
+              >
+                Assignments
+              </button>
+            </div>
+
+            {/* upload Assignment button */}
+            <div className="">
+              <button
+                className="w-[100px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={handleModelThree}
+              >
+                Upload
+              </button>
+            </div>
           </div>
+
           {/* closing button */}
           <div className="p-4">
             <button onClick={() => document.getElementById("modal").close()}>
@@ -199,7 +279,6 @@ const TodayClasses = () => {
                   userId !== "ClassType"
                 ) {
                   const user = classes[userId];
-                  console.log(user);
                   return (
                     <tr
                       key={index}
@@ -226,6 +305,82 @@ const TodayClasses = () => {
             </tbody>
           </table>
         ) : null}
+      </dialog>
+
+      <dialog id="assignmentModal" className="rounded-lg w-[400px] h-[280px]">
+        <div className="header bg-blue-500 flex justify-between items-center ">
+          <p className="px-4 text-white font-bold tracking-wider">
+            Assignments
+          </p>
+          {/* closing button */}
+          <span className="p-4 text-white">
+            <button onClick={handleModalClose}>X</button>
+          </span>
+        </div>
+        <div className="p-4 text-lg ">
+          <>
+            <p className="">
+              {assignment.length > 0 ? (
+                assignment.map((url, index) => (
+                  <>
+                    <a
+                      key={index}
+                      href={url}
+                      target="_blank"
+                      download
+                      className="flex items-center justify-between gap-10"
+                    >
+                      {`${url.fileName}`}
+                      <IoCloudDownloadOutline />
+                    </a>
+                  </>
+                ))
+              ) : (
+                <p>loading please wait</p>
+              )}
+            </p>
+          </>
+        </div>
+      </dialog>
+
+      {/* for assignment */}
+      <dialog id="modal3" className="rounded-lg w-[400px] h-[210px]">
+        <div className="header bg-blue-500 flex justify-between items-center text-white">
+          <p className="px-4  font-bold tracking-wider">Upload Assignment</p>
+          {/* closing button */}
+          <span className="p-4">
+            <button onClick={() => document.getElementById("modal3").close()}>
+              X
+            </button>
+          </span>
+        </div>
+        <div className="p-4 text-lg ">
+          <>
+            <p className="flex gap-4">
+              <label
+                htmlFor="file"
+                className="flex items-center gap-3 border p-1 cursor-pointer"
+              >
+                choose file <IoCloudUploadOutline />
+              </label>
+              <input
+                type="file"
+                id="file"
+                className="hidden"
+                onChange={(e) => {
+                  setAssignmentFile(e.target.files[0]);
+                }}
+              />
+            </p>
+            <br />
+            <button
+              className="w-[200px] bg-gray-200 p-1 rounded-lg hover:border border-black"
+              onClick={uploadAssignment}
+            >
+              done
+            </button>
+          </>
+        </div>
       </dialog>
     </>
   );

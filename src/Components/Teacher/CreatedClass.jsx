@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
-import { db } from "../../firebase-config";
+import { db, storage } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 import VideoCall from "../videoCall";
-
+import { IoCloudUploadOutline } from "react-icons/io5";
+import { IoCloudDownloadOutline } from "react-icons/io5";
+import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
   const [classes, setClasses] = useState([]);
@@ -16,8 +18,28 @@ const CreatedClass = () => {
   const [classTimers, setClassTimers] = useState({});
   const [stdList, setStdList] = useState([]);
   const [inCall, setInCall] = useState(false);
-
+  const [assignmentFile, setAssignmentFile] = useState(null);
+  const [assignment, setAssignment] = useState([]);
+  const [assignmentValue, setAssignmentValue] = useState(false);
+  const [uploadedStudents, setUploadedStudents] = useState([]);
   const { id } = useParams();
+
+  let newList = stdList.map((e) => ({ id: e.id, name: e.namee }));
+
+  // Filter out undefined values
+  newList = newList.filter((id) => id !== undefined);
+
+  // Initialize an array to store assigRef for each stdID
+  let assigRefs = [];
+  let stdName = [];
+  newList.forEach((stdID) => {
+    const refPath = `stdAssignments/${className}/${stdID.id}`;
+
+    stdName.push(stdID.name);
+    const refInstance = ref(storage, refPath);
+    assigRefs.push(refInstance);
+  });
+
   useEffect(() => {
     const fetchCreatedClass = async () => {
       try {
@@ -52,7 +74,10 @@ const CreatedClass = () => {
     modal.showModal();
     setSettingDate(!settingDate);
   };
-
+  const handleModelThree = () => {
+    const modal = document.getElementById("modal3");
+    modal.showModal();
+  };
   useEffect(() => {
     const students = Object.values(classes);
     setStdList(students);
@@ -197,11 +222,72 @@ const CreatedClass = () => {
         ...prevTimers,
         [classTime]: true, // You can use any value to indicate that the timer is active
       }));
+      let closing = document.getElementById("modal3");
+      closing.close();
     } catch (error) {
       console.log(error);
     }
   };
 
+  const uploadAssignment = () => {
+    if (assignmentFile == null) return;
+    const fileRef = ref(
+      storage,
+      `thrAssignments/${className}/${assignmentFile.name}`
+    );
+    uploadBytes(fileRef, assignmentFile).then(() => {
+      alert("uploaded");
+      let closing = document.getElementById("modal3");
+      closing.close();
+    });
+  };
+
+  // Download assignments for each reference
+  useEffect(() => {
+    // Create an array to store all download promises
+    const downloadPromises = [];
+
+    assigRefs.forEach((refInstance) => {
+      const listPromise = listAll(refInstance).then((response) => {
+        response.items.forEach((item) => {
+          const downloadPromise = getDownloadURL(item).then((url) => {
+            const fileName = item.name;
+            let removedItem = stdName.shift();
+            setAssignment((prev) => [...prev, { url, fileName, removedItem }]);
+          });
+          downloadPromises.push(downloadPromise);
+        });
+      });
+      downloadPromises.push(listPromise);
+    });
+
+    // Wait for all download promises to resolve
+    Promise.all(downloadPromises)
+      .then(() => {
+        console.log("All assignments downloaded successfully.");
+      })
+      .catch((error) => {
+        console.error("Error downloading assignments:", error);
+      });
+
+    // Cleanup function
+    return () => {
+      console.log("Component is unmounting. Cleanup tasks performed.");
+      // You may want to cancel ongoing download operations here
+    };
+  }, [assignmentValue]);
+
+  const downloadAssignment = () => {
+    setAssignmentValue(!assignmentValue);
+    const modal = document.getElementById("assignmentModal");
+    modal.showModal();
+  };
+  const handleModalClose = () => {
+    setAssignment([]);
+    document.getElementById("assignmentModal").close();
+  };
+
+  
   return (
     <>
       {Object.keys(createdClass).length > 0 ? (
@@ -226,7 +312,7 @@ const CreatedClass = () => {
 
       <dialog id="modal" className="ml-72 rounded-lg w-[1200px] h-[660px]">
         <div className="header flex justify-between items-center m-2">
-          <div className="flex gap-10 ">
+          <div className="flex items-center gap-10 ">
             {/* schedule class button */}
             <div className="">
               <button
@@ -259,6 +345,27 @@ const CreatedClass = () => {
                 onClick={() => setSeeStudents(!seeStudents)}
               >
                 Check Students
+              </button>
+            </div>
+
+            {/* upload Assignment button */}
+            <div className="">
+              <button
+                className="w-[100px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={handleModelThree}
+              >
+                Upload
+              </button>
+            </div>
+
+            {/* download assignment */}
+            <div className="">
+              <button
+                variant="contained"
+                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={downloadAssignment}
+              >
+                Assignments
               </button>
             </div>
           </div>
@@ -326,6 +433,7 @@ const CreatedClass = () => {
         ) : null}
       </dialog>
 
+      {/* for scheduling class */}
       <dialog id="modal2" className="rounded-lg w-[400px] h-[320px]">
         <div className="header bg-blue-500 flex justify-between items-center ">
           <p className="px-4 text-white font-bold tracking-wider">Schedule</p>
@@ -378,6 +486,98 @@ const CreatedClass = () => {
               </button>
             </>
           ) : null}
+        </div>
+      </dialog>
+
+      {/* for assignment select file */}
+      <dialog id="modal3" className="rounded-lg w-[400px] h-[210px]">
+        <div className="header bg-blue-500 flex justify-between items-center text-white">
+          <p className="px-4  font-bold tracking-wider">Upload Assignment</p>
+          {/* closing button */}
+          <span className="p-4">
+            <button onClick={() => document.getElementById("modal3").close()}>
+              X
+            </button>
+          </span>
+        </div>
+        <div className="p-4 text-lg ">
+          <>
+            <p className="flex gap-4">
+              <label
+                htmlFor="file"
+                className="flex items-center gap-3 border p-1 cursor-pointer"
+              >
+                choose file <IoCloudUploadOutline />
+              </label>
+              <input
+                type="file"
+                id="file"
+                className="hidden"
+                onChange={(e) => {
+                  setAssignmentFile(e.target.files[0]);
+                }}
+              />
+            </p>
+            <br />
+            <button
+              className="w-[200px] bg-gray-200 p-1 rounded-lg hover:border border-black"
+              onClick={uploadAssignment}
+            >
+              done
+            </button>
+          </>
+        </div>
+      </dialog>
+
+      {/* downloaded assignments */}
+      <dialog id="assignmentModal" className="rounded-lg w-[650px] h-[500px]">
+        <div className="header bg-blue-500 flex justify-between items-center ">
+          <p className="px-4 text-white font-bold tracking-wider">
+            Assignments
+          </p>
+          {/* closing button */}
+          <span className="p-4 text-white">
+            <button onClick={handleModalClose}>X</button>
+          </span>
+        </div>
+        <div className="p-4 text-lg ">
+          <>
+            {assignment.length > 0 ? (
+              <table className="border w-[600px]">
+                <thead>
+                  <tr className="border">
+                    <th className="border">#</th>
+                    <th className="border">Name</th>
+                    <th>Assignment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assignment.map((url, index) => (
+
+                    <tr key={index} className="p-20 border">
+                    <td className="p-4 border" >{index+1}</td>
+                      <td className="p-4 border">
+                        <p>
+                          {`${url.removedItem}`}
+                        </p>
+                      </td>
+                      <td className="p-4 ">
+                        <a
+                          href={url}
+                          target="_blank"
+                          download
+                          className="flex items-center justify-between gap-4"
+                        >
+                          {`${url.fileName}`}
+                          <IoCloudDownloadOutline />
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ):<p>No Assignments</p>}
+          </>
         </div>
       </dialog>
     </>

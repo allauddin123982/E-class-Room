@@ -10,26 +10,33 @@ export default function Video(props) {
   }, [users, tracks]);
 
   return (
-    <div className="h-full">
-      <div className={`grid grid-cols-${divSpacing}`}>
-        <AgoraVideoPlayer videoTrack={tracks[1]} className="h-full w-full" />
+    <>
+      <div className="h-[400px] bg-red-500">
+        video streams
+        <div>
+        <AgoraVideoPlayer videoTrack={tracks[1] } className="h-full w-full" />
       </div>
-      {users.length > 0 &&
-        users.map((user) => {
-            <p>{user.uid}</p>
-              if (user.videoTrack) {
-            return (
-              <div className={`grid grid-cols-${divSpacing}`} key={user.uid}>
-                {user.uid}
-                <AgoraVideoPlayer
-                  videoTrack={user.videoTrack}
-                  className="h-full w-full"
-                />
-
-              </div>
-            );
-          } else return null;
-        })}
-    </div>
+        {users.length > 0 ? (
+          users.map((user) => {
+            if (user.videoTrack) {
+              return (
+                <div
+                  key={user.uid}
+                  className={`grid grid-cols-${divSpacing} w-[200px] h-[100px] m-10`}
+                >
+                  <AgoraVideoPlayer
+                    videoTrack={user.videoTrack}
+                    className="h-[100px] w-[200px] border"
+                  />
+                  <p>{user.uid}</p>
+                </div>
+              );
+            } else return null;
+          })
+        ) : (
+          <p>no users</p>
+        )}
+      </div>
+    </>
   );
 }
