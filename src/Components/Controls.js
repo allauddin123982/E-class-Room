@@ -9,34 +9,7 @@ export default function Controls(props) {
   const client = useClient();
   const { tracks, setStart, setInCall } = props;
   const [trackState, setTrackState] = useState({  audio: true, video: true});
-
-  // let toggleMic = async (e) => {
-  //   let button = e.currentTarget;
-  //   if (tracks[0].muted) {
-  //     await tracks[0].setMuted(false);
-  //     await tracks[0].setMuted(!trackState.audio);
-  //     button.classList.add("active");
-  //   } else {
-  //     await tracks[0].setMuted(true);
-  //     await tracks[1].setEnabled(!trackState.video);
-  //     button.classList.remove("active");
-  //   }
-  // };
-  // let toggleCamera = async (e) => {
-  //   let button = e.currentTarget;
-
-  //   if (tracks[1].muted) {
-  //     await tracks[1].setMuted(false);
-  //     await tracks[1].setEnabled(!trackState.video);
-  //     button.classList.add("active");
-  //   } else {
-  //     await tracks[1].setMuted(true);
-
-  //     await tracks[1].setEnabled(!trackState.video);
-  //     button.classList.remove("active");
-  //   }
-  // };
-
+ 
   const mute = async (type) => {
     if (type === "audio") {
       await tracks[0].setMuted(!trackState.audio);
@@ -70,7 +43,7 @@ export default function Controls(props) {
               ? "text-blue-500 p-2 text-2xl"
               : "text-red-500 p-2 text-2xl"
           }
-          onClick={() => mute("audio")}
+          onClick={mute}  
         >
           {trackState.audio ? <FaMicrophone /> : <IoIosMicOff />}
         </button>
@@ -93,7 +66,7 @@ export default function Controls(props) {
         <button
           variant="contained"
           color="default"
-          className="text-2xl"
+          className="text-2xl text-blue-400"
           onClick={() => leaveChannel()}
         >
           <IoMdExit />

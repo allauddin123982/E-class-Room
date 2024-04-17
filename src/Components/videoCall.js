@@ -156,9 +156,9 @@ export default function VideoCall(props) {
   }, [channelName, client, ready, tracks]);
 
   return (
-    <div className="bg-green-300 absolute top-20 left-6 border border-black h-[560px] w-[1150px]">
+    <div className="bg-gray-800 absolute top-20 left-6 rounded-xl p-2 h-[560px] w-[1150px]">
       <div className="flex gap-2 justify-between px-2">
-        <div className="timer">Class Started {formatTime(timer)}</div>
+        <div className="timer text-white">Class Started {formatTime(timer)}</div>
         <div className="">
           {ready && tracks && (
             <Controls
