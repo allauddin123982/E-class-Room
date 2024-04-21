@@ -8,21 +8,22 @@ import { IoMdExit } from "react-icons/io";
 export default function Controls(props) {
   const client = useClient();
   const { tracks, setStart, setInCall } = props;
-  const [trackState, setTrackState] = useState({  audio: true, video: true});
+  const [trackState, setTrackState] = useState({ video: true, audio: true});
  
   const mute = async (type) => {
     if (type === "audio") {
-      await tracks[0].setMuted(!trackState.audio);
+      await tracks[0].setMuted(false);
       setTrackState((ps) => {
         return { ...ps, audio: !ps.audio };
       });
     } else if (type === "video") {
-      await tracks[1].setMuted(!trackState.video);
+      await tracks[1].setEnabled(!trackState.video);
       setTrackState((ps) => {
         return { ...ps, video: !ps.video };
       });
     }
   };
+  
   const leaveChannel = async () => {
     await client.leave();
     client.removeAllListeners();
@@ -43,7 +44,7 @@ export default function Controls(props) {
               ? "text-blue-500 p-2 text-2xl"
               : "text-red-500 p-2 text-2xl"
           }
-          onClick={mute}  
+          onClick={()=> mute("audio")}  
         >
           {trackState.audio ? <FaMicrophone /> : <IoIosMicOff />}
         </button>
