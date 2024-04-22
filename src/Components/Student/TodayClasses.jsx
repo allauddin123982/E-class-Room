@@ -29,9 +29,9 @@ const TodayClasses = () => {
   const { id } = useParams();
 
   let teacherIDs = fetchClasses.map((cls) => cls.ClassTeacherID);
-  teacherIDs = teacherIDs.shift();
+  teacherIDs = teacherIDs.pop();
   const assigRef = ref(storage, `thrAssignments/${classes.id}/`);
- 
+
   //fetch classes
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +42,7 @@ const TodayClasses = () => {
         querySnapshot.forEach((doc) => {
           data.push({ id: doc.id, ...doc.data() });
         });
-      
+
         // Find classes where at least one student has a matching uid
         let matchingClasses = data.filter((classObj) => {
           return Object.keys(classObj).some((key) => {
@@ -58,7 +58,7 @@ const TodayClasses = () => {
     };
 
     fetchData();
-  }, [id]); 
+  }, [id]);
 
   //fetch students
   useEffect(() => {
@@ -75,7 +75,6 @@ const TodayClasses = () => {
           // Access the data using the data() method
           const stdData = docSnapshot.data();
           setStudentData(stdData);
-          
         } else {
           console.log("Document does not exist");
         }
@@ -86,7 +85,7 @@ const TodayClasses = () => {
 
     fetchStudentData();
   }, [id]);
-  
+
   const handleClick = (className) => {
     const modal = document.getElementById("modal");
     modal.showModal();
@@ -112,7 +111,6 @@ const TodayClasses = () => {
           // Access the data using the data() method
           const teacherData = docSnapshot.data();
           setUserData(teacherData);
-         
         } else {
           console.log("Document does not exist");
         }
@@ -130,7 +128,8 @@ const TodayClasses = () => {
       response.items.forEach((item) => {
         getDownloadURL(item).then((url) => {
           const fileName = item.name;
-          setAssignment((prev) => [...prev, { url, fileName }]);
+          setAssignment((prev) => [ ...prev, { url, fileName: `${fileName}` },
+          ]);
         });
       });
     });
@@ -148,8 +147,12 @@ const TodayClasses = () => {
   //student uploading assignment
   const uploadAssignment = () => {
     if (assignmentFile === null) return;
-    const fileRef = ref(storage,`stdAssignments/${classes.id}/${id}/${assignmentFile.name}`);
-    uploadBytes(fileRef, assignmentFile).then(() => {
+    const fileRef = ref(
+      storage,
+      `stdAssignments/${classes.id}/${id}/${assignmentFile.name}`
+    );
+    uploadBytes(fileRef, assignmentFile)
+      .then(() => {
         alert("Uploaded");
         // Close the modal
         let closing = document.getElementById("modal3");
@@ -169,7 +172,7 @@ const TodayClasses = () => {
     setAssignment([]);
     document.getElementById("assignmentModal").close();
   };
-
+ console.log("assignment 2 q",assignment)
   return (
     <>
       {Object.keys(fetchClasses).length > 0 ? (
@@ -344,29 +347,26 @@ const TodayClasses = () => {
           <>
             <p className="">
               {assignment.length > 0 ? (
-                assignment.map((url, index) => (
-                  <>
-                    <a
-                      key={index}
-                      href={url}
-                      target="_blank"
-                      download
-                      className="flex items-center justify-between gap-10"
-                    >
-                      {`${url.fileName}`}
-                      <IoCloudDownloadOutline />
-                    </a>
-                  </>
+                assignment.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.url}
+                    target="_blank"
+                    download
+                    className="text-[16px] flex items-center justify-between gap-10"
+                  >
+                    {`${item.fileName}`} <IoCloudDownloadOutline />
+                  </a>
                 ))
               ) : (
-                <p>loading please wait</p>
+                <p>no assignments</p>
               )}
             </p>
           </>
         </div>
       </dialog>
 
-      {/* for assignment */}
+      {/* for student uploading assignment */}
       <dialog id="modal3" className="rounded-lg w-[400px] h-[210px]">
         <div className="header bg-blue-500 flex justify-between items-center text-white">
           <p className="px-4  font-bold tracking-wider">Upload Assignment</p>

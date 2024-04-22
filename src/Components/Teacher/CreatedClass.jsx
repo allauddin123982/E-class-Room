@@ -577,23 +577,23 @@ const CreatedClass = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {assignment.map((url, index) => (
+                  {assignment.map((item, index) => (
 
                     <tr key={index} className="p-20 border">
                     <td className="p-4 border" >{index+1}</td>
                       <td className="p-4 border">
                         <p>
-                          {`${url.removedItem}`}
+                          {`${item.removedItem}`}
                         </p>
                       </td>
                       <td className="p-4 ">
                         <a
-                          href={url}
+                          href={item.url}
                           target="_blank"
                           download
                           className="flex items-center justify-between gap-4"
                         >
-                          {`${url.fileName}`}
+                          {`${item.fileName}`}
                           <IoCloudDownloadOutline />
                         </a>
                       </td>
