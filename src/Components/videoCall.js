@@ -13,13 +13,14 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { IoMdExit } from "react-icons/io";
 import "./videoCall.css";
 export default function VideoCall(props) {
-  const { setInCall ,stdPropData } = props; //true
+  const { setInCall, stdPropData } = props; //true
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [trackState, setTrackState] = useState({  video: true, audio: true });
+  const [trackState, setTrackState] = useState({ video: true, audio: true });
   const client = useClient(); //to connect to video call
-  const { expandVideoFrame,  displayFrame, userIdInDisplayFrame  } = videoCallDom();
+  const { expandVideoFrame, displayFrame, userIdInDisplayFrame } =
+    videoCallDom();
 
   const { ready, tracks } = useMicrophoneAndCameraTracks();
   let uid = sessionStorage.getItem("uid");
@@ -81,7 +82,7 @@ export default function VideoCall(props) {
 
     let joinStream = async () => {
       let player = `
-  <div class="video__container" id="user-container-${uid}" style="background-image: url('${stdPropData.img}')">
+  <div class="video__container" id="user-container-${uid}">
     <div class="video-player" id="user-${uid}"></div>
   </div>
 `;
@@ -138,13 +139,13 @@ export default function VideoCall(props) {
       }
 
       if (userIdInDisplayFrame === `user-container-${user.uid}`) {
-        displayFrame.style.display = null
- 
-        let videoFrames = document.getElementsByClassName('video__container')
+        displayFrame.style.display = null;
 
-        for(let i = 0; videoFrames.length > i; i++){
-            videoFrames[i].style.height = '200px'
-            videoFrames[i].style.width = '200px'
+        let videoFrames = document.getElementsByClassName("video__container");
+
+        for (let i = 0; videoFrames.length > i; i++) {
+          videoFrames[i].style.height = "200px";
+          videoFrames[i].style.width = "200px";
         }
       }
     };
@@ -158,8 +159,6 @@ export default function VideoCall(props) {
       client.off("user-unpublished");
       client.off("user-left");
     };
-
-
   }, [channelName, client, ready, tracks]);
 
   const mute = async (type) => {
@@ -172,10 +171,9 @@ export default function VideoCall(props) {
       await tracks[1].setEnabled(!trackState.video);
       setTrackState((ps) => {
         return { ...ps, video: !ps.video };
-      }); 
+      });
     }
   };
-
 
   const leaveChannel = async () => {
     await client.leave();
@@ -186,60 +184,68 @@ export default function VideoCall(props) {
     setInCall(false);
   };
 
-  console.log("props se aya hua student", stdPropData.namee)
+  console.log("props se aya hua student", stdPropData.namee);
 
   return (
     <div className="bg-gray-800 absolute top-20 left-6 rounded-xl p-2 h-[560px] w-[1150px]">
       <div className="flex gap-2 justify-between px-2">
-        <div className="timer text-white">Class Started {formatTime(timer)}</div>
-        
+        <div className="timer text-white">
+          Class Started {formatTime(timer)}
+        </div>
+
         <div className="flex items-center space-x-2 ">
-      <div>
-        {/* mic button */}
-        <button
-          variant="contained"
-          className={
-            trackState.audio
-              ? "text-blue-500 p-2 text-2xl"
-              : "text-red-500 p-2 text-2xl"
-          }
-          onClick={() => mute("audio")}  
-        >
-          {trackState.audio ? <FaMicrophone /> : <IoIosMicOff />}
-        </button>
-      </div>
-      <div>
-        {/* camera button */}
-        <button
-          variant="contained"
-          className={
-            trackState.video
-              ? "text-blue-500 p-2 text-2xl "
-              : "text-red-500 p-2 text-2xl "
-          }
-          onClick={()=> mute("video")}
-        >
-          {trackState.video ? <BsCameraVideoFill /> : <BsCameraVideoOffFill />}
-        </button>
-      </div>
-      <div>
-        {/* leave button */}
-        <button
-          variant="contained"
-          color="default"
-          className="text-2xl text-blue-400"
-          onClick={() => leaveChannel()}
-        >
-          <IoMdExit />
-        </button>
-      </div>
-    </div>
+          <div>
+            {/* mic button */}
+            <button
+              variant="contained"
+              className={
+                trackState.audio
+                  ? "text-blue-500 p-2 text-2xl"
+                  : "text-red-500 p-2 text-2xl"
+              }
+              onClick={() => mute("audio")}
+            >
+              {trackState.audio ? <FaMicrophone /> : <IoIosMicOff />}
+            </button>
+          </div>
+          <div>
+            {/* camera button */}
+            <button
+              variant="contained"
+              className={
+                trackState.video
+                  ? "text-blue-500 p-2 text-2xl "
+                  : "text-red-500 p-2 text-2xl "
+              }
+              onClick={() => mute("video")}
+            >
+              {trackState.video ? (
+                <BsCameraVideoFill />
+              ) : (
+                <BsCameraVideoOffFill />
+              )}
+            </button>
+          </div>
+          <div>
+            {/* leave button */}
+            <button
+              variant="contained"
+              color="default"
+              className="text-2xl text-blue-400"
+              onClick={() => leaveChannel()}
+            >
+              <IoMdExit />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="">
         <section id="stream__container">
           <div id="stream__box" className="bg-red-400"></div>
-          <div id="streams__container"></div>
+          <div id="streams__container">
+            {!trackState.video ? <img src={stdPropData.img} /> : null}
+          </div>
         </section>
       </div>
     </div>
