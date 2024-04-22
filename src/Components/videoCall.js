@@ -86,7 +86,7 @@ export default function VideoCall(props) {
     <div class="video-player" id="user-${uid}"></div>
   </div>
   <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
-          {stdPropData.namee}
+          ${stdPropData.namee}
           </p>
 `;
 
