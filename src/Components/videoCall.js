@@ -13,7 +13,7 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { IoMdExit } from "react-icons/io";
 import "./videoCall.css";
 export default function VideoCall(props) {
-  const { setInCall, stdPropData } = props; //true
+  const { setInCall, stdPropData, thrPropData } = props; //true
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -184,8 +184,7 @@ export default function VideoCall(props) {
     setInCall(false);
   };
 
-  console.log("props se aya hua student", stdPropData.namee);
-
+  // console.log("helo ", stdPropData)
   return (
     <div className="bg-gray-800 absolute top-20 left-6 rounded-xl p-2 h-[560px] w-[1150px]">
       <div className="flex gap-2 justify-between px-2">
@@ -243,9 +242,13 @@ export default function VideoCall(props) {
       <div className="">
         <section id="stream__container">
           <div id="stream__box" className="bg-red-400"></div>
-          <div id="streams__container">
-            {!trackState.video ? <img src={stdPropData.img} /> : null}
-          </div>
+          <div id="streams__container"></div>
+          <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
+            asdasd {stdPropData.namee}
+          </p>
+
+          {!trackState.video ? <img src={thrPropData.img} /> : null}
+          {!trackState.video ? <img src={stdPropData.img} /> : null}
         </section>
       </div>
     </div>

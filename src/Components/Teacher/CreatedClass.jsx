@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 import VideoCall from "../videoCall";
@@ -8,6 +8,7 @@ import { IoCloudDownloadOutline } from "react-icons/io5";
 import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
 const CreatedClass = () => {
   const [createdClass, setCreatedClass] = useState({});
+  const [userData, setUserData] = useState({});
   const [classes, setClasses] = useState([]);
   const [settingDate, setSettingDate] = useState(false);
   const [seeStudents, setSeeStudents] = useState(false);
@@ -277,6 +278,30 @@ const CreatedClass = () => {
     };
   }, [assignmentValue]);
 
+  useEffect(() => {
+    const fetchTeacherData = async () => {
+      try {
+        // Construct the document reference
+        const userDocRef = doc(db, `teacherdata/${id}/`);
+
+        // Fetch the document
+        const docSnapshot = await getDoc(userDocRef);
+
+        // Check if the document exists
+        if (docSnapshot.exists()) {
+          // Access the data using the data() method
+          const teacherData = docSnapshot.data();
+          setUserData(teacherData);
+        } else {
+          console.log("Document does not exist");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchTeacherData();
+  }, [id]);
   const downloadAssignment = () => {
     setAssignmentValue(!assignmentValue);
     const modal = document.getElementById("assignmentModal");
@@ -326,7 +351,7 @@ const CreatedClass = () => {
             {/* start class now button */}
             <div className="">
               {inCall ? (
-                <VideoCall setInCall={setInCall} />
+                <VideoCall setInCall={setInCall} thrPropData={userData} />
               ) : (
                 <button
                   variant="contained"
