@@ -52,6 +52,10 @@
     overflow: hidden;
     height: 150px;
     width: 150px;
+    background-image: url("/src/assets/backGroundImg.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 70px;
 }
 
 .video-player{

@@ -13,7 +13,7 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { IoMdExit } from "react-icons/io";
 import "./videoCall.css";
 export default function VideoCall(props) {
-  const { setInCall } = props; //true
+  const { setInCall ,stdPropData } = props; //true
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -80,9 +80,11 @@ export default function VideoCall(props) {
     };
 
     let joinStream = async () => {
-      let player = `<div class="video__container" id="user-container-${uid}">
-      <div class="video-player" id="user-${uid}"></div>
-   </div>`;
+      let player = `
+  <div class="video__container" id="user-container-${uid}" style="background-image: url('${stdPropData.img}')">
+    <div class="video-player" id="user-${uid}"></div>
+  </div>
+`;
 
       document
         .getElementById("streams__container")
@@ -183,6 +185,9 @@ export default function VideoCall(props) {
     setStart(false);
     setInCall(false);
   };
+
+  console.log("props se aya hua student", stdPropData.namee)
+
   return (
     <div className="bg-gray-800 absolute top-20 left-6 rounded-xl p-2 h-[560px] w-[1150px]">
       <div className="flex gap-2 justify-between px-2">

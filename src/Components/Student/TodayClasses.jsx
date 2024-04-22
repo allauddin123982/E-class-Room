@@ -20,6 +20,7 @@ const TodayClasses = () => {
   const [seeStudents, setSeeStudents] = useState(false);
   const [classTeacherID, setClassTeacherID] = useState("");
   const [userData, setUserData] = useState({});
+  const [studentData, setStudentData] = useState({});
   const [inCall, setInCall] = useState(false);
   const [assignment, setAssignment] = useState([]);
   const [assignmentValue, setAssignmentValue] = useState(false);
@@ -30,7 +31,8 @@ const TodayClasses = () => {
   let teacherIDs = fetchClasses.map((cls) => cls.ClassTeacherID);
   teacherIDs = teacherIDs.shift();
   const assigRef = ref(storage, `thrAssignments/${classes.id}/`);
-
+ 
+  //fetch classes
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,6 +60,33 @@ const TodayClasses = () => {
     fetchData();
   }, [id]); 
 
+  //fetch students
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        // Construct the document reference
+        const userDocRef = doc(db, `studentdata/${id}/`);
+
+        // Fetch the document
+        const docSnapshot = await getDoc(userDocRef);
+
+        // Check if the document exists
+        if (docSnapshot.exists()) {
+          // Access the data using the data() method
+          const stdData = docSnapshot.data();
+          setStudentData(stdData);
+          
+        } else {
+          console.log("Document does not exist");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchStudentData();
+  }, [id]);
+  
   const handleClick = (className) => {
     const modal = document.getElementById("modal");
     modal.showModal();
@@ -83,12 +112,7 @@ const TodayClasses = () => {
           // Access the data using the data() method
           const teacherData = docSnapshot.data();
           setUserData(teacherData);
-
-          // if (userData && userData.img) {
-          //   const storageRef = ref(storage, `teacher/${id}/`);
-          //   const url = await getDownloadURL(storageRef);
-          //   setImageUrl(url);
-          // }
+         
         } else {
           console.log("Document does not exist");
         }
@@ -145,7 +169,6 @@ const TodayClasses = () => {
     setAssignment([]);
     document.getElementById("assignmentModal").close();
   };
-  // console.log("helo teaher ", students);
 
   return (
     <>
@@ -187,7 +210,7 @@ const TodayClasses = () => {
             {/* join class button */}
             <div className="">
               {inCall ? (
-                <VideoCall setInCall={setInCall} />
+                <VideoCall setInCall={setInCall} stdPropData={studentData} />
               ) : (
                 <button
                   variant="contained"

@@ -9,7 +9,6 @@ const StudentProfile = () => {
   const [updateOpenModal, setUpdateOpenModal] = useState(false);
   const [addOpenModal, setAddOpenModal] = useState(false);
   const [userData, setUserData] = useState({});
-  // const [imageUrl, setImageUrl] = useState("");
   const [buttonValue, setButtonValue] = useState(false);
   const { id } = useParams();
 
@@ -27,11 +26,7 @@ const StudentProfile = () => {
           // Access the data using the data() method
           const stdData = docSnapshot.data();
           setUserData(stdData);
-          // if (userData && userData.img) {
-          //   const storageRef = ref(storage, `student/${id}/`);
-          //   const url = await getDownloadURL(storageRef);
-          //   setImageUrl(url);
-          // }
+          
         } else {
           console.log("Document does not exist");
         }
