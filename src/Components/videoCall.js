@@ -85,6 +85,9 @@ export default function VideoCall(props) {
   <div class="video__container" id="user-container-${uid}">
     <div class="video-player" id="user-${uid}"></div>
   </div>
+  <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
+          {stdPropData.namee}
+          </p>
 `;
 
       document
@@ -243,12 +246,10 @@ export default function VideoCall(props) {
         <section id="stream__container">
           <div id="stream__box" className="bg-red-400"></div>
           <div id="streams__container"></div>
-          <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
-            asdasd {stdPropData.namee}
-          </p>
-
+          
+{/* 
           {!trackState.video ? <img src={thrPropData.img} /> : null}
-          {!trackState.video ? <img src={stdPropData.img} /> : null}
+          {!trackState.video ? <img src={stdPropData.img} /> : null} */}
         </section>
       </div>
     </div>
