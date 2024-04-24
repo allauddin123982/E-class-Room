@@ -55,7 +55,8 @@
     background-image: url("/src/assets/backGroundImg.jpg");
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 70px;
+    background-size: 100%;
+    
 }
 
 .video-player{
