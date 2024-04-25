@@ -13,7 +13,7 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { IoMdExit } from "react-icons/io";
 import "./videoCall.css";
 export default function VideoCall(props) {
-  const { setInCall, stdPropData, thrPropData } = props; //true
+  const { setInCall } = props; //true
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -86,8 +86,8 @@ export default function VideoCall(props) {
     <div class="video-player" id="user-${uid}"></div>
   </div>
   <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
-          {stdPropData.namee}
-          </p>
+  ${uid}
+  </p>
 `;
 
       document
@@ -241,15 +241,13 @@ export default function VideoCall(props) {
           </div>
         </div>
       </div>
-
+      
       <div className="">
-        <section id="stream__container">
+        <section id="stream__container " className="text-white">
           <div id="stream__box" className="bg-red-400"></div>
           <div id="streams__container"></div>
 
-          {/* 
-          {!trackState.video ? <img src={thrPropData.img} /> : null}
-          {!trackState.video ? <img src={stdPropData.img} /> : null} */}
+        
         </section>
       </div>
     </div>

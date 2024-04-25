@@ -22,7 +22,7 @@ const CreatedClass = () => {
   const [assignmentFile, setAssignmentFile] = useState(null);
   const [assignment, setAssignment] = useState([]);
   const [assignmentValue, setAssignmentValue] = useState(false);
-  const [uploadedStudents, setUploadedStudents] = useState([]);
+  
   const { id } = useParams();
 
   let newList = stdList.map((e) => ({ id: e.id, name: e.namee }));
@@ -351,12 +351,15 @@ const CreatedClass = () => {
             {/* start class now button */}
             <div className="">
               {inCall ? (
-                <VideoCall setInCall={setInCall} thrPropData={userData} />
+                <VideoCall setInCall={setInCall} />
               ) : (
                 <button
                   variant="contained"
                   className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
-                  onClick={() => setInCall(true)}
+                  onClick={() => {
+                    setInCall(true);
+                    
+                  }}
                 >
                   Start Class
                 </button>

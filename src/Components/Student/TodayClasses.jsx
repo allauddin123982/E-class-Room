@@ -128,8 +128,7 @@ const TodayClasses = () => {
       response.items.forEach((item) => {
         getDownloadURL(item).then((url) => {
           const fileName = item.name;
-          setAssignment((prev) => [ ...prev, { url, fileName: `${fileName}` },
-          ]);
+          setAssignment((prev) => [...prev, { url, fileName: `${fileName}` }]);
         });
       });
     });
@@ -172,7 +171,7 @@ const TodayClasses = () => {
     setAssignment([]);
     document.getElementById("assignmentModal").close();
   };
- console.log("assignment 2 q",assignment)
+  console.log("assignment 2 q", assignment);
   return (
     <>
       {Object.keys(fetchClasses).length > 0 ? (
@@ -213,12 +212,15 @@ const TodayClasses = () => {
             {/* join class button */}
             <div className="">
               {inCall ? (
-                <VideoCall setInCall={setInCall} stdPropData={studentData} />
+                <VideoCall setInCall={setInCall} />
               ) : (
                 <button
                   variant="contained"
                   className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
-                  onClick={() => setInCall(true)}
+                  onClick={() => {
+                    setInCall(true);
+                   
+                  }}
                 >
                   Join Class
                 </button>
