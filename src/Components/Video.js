@@ -24,11 +24,13 @@ export default function Video(props) {
                   key={user.uid}
                   className={`grid grid-cols-${divSpacing} w-[200px] h-[100px] m-10`}
                 >
+                  
                   <AgoraVideoPlayer
                     videoTrack={user.videoTrack}
                     className="h-[100px] w-[200px] border"
                   />
-                  <p>{user.uid}</p>
+                  {/* Display Student Name with student  */}
+                 
                 </div>
               );
             } else return null;

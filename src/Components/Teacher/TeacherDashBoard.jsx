@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../../firebase-config";
 import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import tabs from "../../TeacherTabs.json";
 import TeacherProfile from "./TeacherProfile";
 import CreateClass from "./CreateClass";
@@ -12,7 +12,7 @@ const TeacherDashBoard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(false);
   const [titleName, setTitleName] = useState("createdClass");
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -23,6 +23,8 @@ const TeacherDashBoard = () => {
       }
     });
   }, []);
+
+
 
   const signUserOut = async () => {
     try {
@@ -35,6 +37,7 @@ const TeacherDashBoard = () => {
     }
   };
 
+  //side bar tabs
   const handleTab = (item) => {
     setTitleName(item.idd);
   };

@@ -5,11 +5,14 @@ import {
   useMicrophoneAndCameraTracks,
   channelName,
 } from "../setting.js";
+import AgoraRTC from "agora-rtc-sdk-ng"; // Import AgoraRTC
 import { videoCallDom } from "./videoCallDom.js";
 import { FaMicrophone } from "react-icons/fa6";
 import { IoIosMicOff } from "react-icons/io";
 import { BsCameraVideoFill } from "react-icons/bs";
 import { BsCameraVideoOffFill } from "react-icons/bs";
+import { TbScreenShare } from "react-icons/tb";
+import { TbScreenShareOff } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
 import "./videoCall.css";
 export default function VideoCall(props) {
@@ -17,10 +20,10 @@ export default function VideoCall(props) {
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [screenShare, setScreenShare] = useState(true);
   const [trackState, setTrackState] = useState({ video: true, audio: true });
   const client = useClient(); //to connect to video call
-  const { expandVideoFrame, displayFrame, userIdInDisplayFrame } =
-    videoCallDom();
+  let { expandVideoFrame, displayFrame, userIdInDisplayFrame } = videoCallDom();
 
   const { ready, tracks } = useMicrophoneAndCameraTracks();
   let uid = sessionStorage.getItem("uid");
@@ -29,6 +32,8 @@ export default function VideoCall(props) {
     sessionStorage.setItem("uid", uid);
   }
   let remoteUsers = {};
+  let localScreenTracks;
+  let sharingScreen = false;
 
   useEffect(() => {
     videoCallDom();
@@ -85,9 +90,7 @@ export default function VideoCall(props) {
   <div class="video__container" id="user-container-${uid}">
     <div class="video-player" id="user-${uid}"></div>
   </div>
-  <p className="border-4 border-white text-2xl text-white w-24 mt-5 ml-28">
-  ${uid}
-  </p>
+
 `;
 
       document
@@ -178,6 +181,64 @@ export default function VideoCall(props) {
     }
   };
 
+  let switchToCamera = async () => {
+    let player = `<div class="video__container" id="user-container-${uid}">
+                    <div class="video-player" id="user-${uid}"></div>
+                 </div>`;
+    displayFrame.insertAdjacentHTML("beforeend", player);
+
+    await tracks[0].setMuted(true);
+    await tracks[1].setMuted(true);
+
+    tracks[1].play(`user-${uid}`);
+    await client.publish(tracks[1]);
+  };
+
+  let toggleScreen = async (e) => {
+    setScreenShare(false);
+
+    if (!sharingScreen) {
+      sharingScreen = true;
+
+      localScreenTracks = await AgoraRTC.createScreenVideoTrack();
+
+      document.getElementById(`user-container-${uid}`).remove();
+      displayFrame.style.display = "block";
+
+      let player = `<div class="video__container" id="user-container-${uid}">
+            <div class="video-player" id="user-${uid}"></div>
+        </div>`;
+
+      displayFrame.insertAdjacentHTML("beforeend", player);
+      document
+        .getElementById(`user-container-${uid}`)
+        .addEventListener("click", expandVideoFrame);
+
+      userIdInDisplayFrame = `user-container-${uid}`;
+      localScreenTracks.play(`user-${uid}`);
+
+      //await client.publish([tracks[0], tracks[1]]);
+
+      await client.unpublish(tracks[1]);
+      await client.publish(localScreenTracks);
+
+      let videoFrames = document.getElementsByClassName("video__container");
+      for (let i = 0; videoFrames.length > i; i++) {
+        if (videoFrames[i].id != userIdInDisplayFrame) {
+          videoFrames[i].style.height = "100px";
+          videoFrames[i].style.width = "100px";
+        }
+      }
+    } else {
+      sharingScreen = false;
+
+      document.getElementById(`user-container-${uid}`).remove();
+      await client.unpublish(localScreenTracks);
+
+      switchToCamera();
+    }
+  };
+
   const leaveChannel = async () => {
     await client.leave();
     client.removeAllListeners();
@@ -196,8 +257,23 @@ export default function VideoCall(props) {
         </div>
 
         <div className="flex items-center space-x-2 ">
+          {/* share screen button */}
           <div>
-            {/* mic button */}
+            <button
+              variant="contained"
+              className={
+                screenShare
+                  ? "text-blue-500 p-2 text-2xl"
+                  : "text-red-500 p-2 text-2xl"
+              }
+              onClick={toggleScreen}
+            >
+              {screenShare ? <TbScreenShare /> : <TbScreenShareOff />}
+            </button>
+          </div>
+
+          {/* mic button */}
+          <div>
             <button
               variant="contained"
               className={
@@ -241,13 +317,11 @@ export default function VideoCall(props) {
           </div>
         </div>
       </div>
-      
+
       <div className="">
         <section id="stream__container " className="text-white">
           <div id="stream__box" className="bg-red-400"></div>
           <div id="streams__container"></div>
-
-        
         </section>
       </div>
     </div>
