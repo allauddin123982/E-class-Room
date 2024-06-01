@@ -14,33 +14,32 @@
   flex-wrap: wrap;
   gap: 2em;
   padding-left: 100px;
-  /* justify-content: ; */
   align-items: center;
   margin-top: 25px;
-  /* margin-bottom: 225px; */
+ 
 }
 
 #stream__box{
   background-color: #3f434a;
-  width: 70vw;
+  width: 45vw;
   height: 42vh;
-  margin-left: 200px;
+  margin-left: 100px;
   display: none;
  
 }
 
 #stream__box .video__container{
-  border: 2px solid #000;
   border-radius: 0;
   height: 100%!important;
   width:100%!important;
-
-  /* background-size: 300px; */
 }
 
 #stream__box video{
   border-radius: 0;
+  height: 100%!important;
+  width:100%!important;
 }
+
 
 .video__container{
     display: flex;
