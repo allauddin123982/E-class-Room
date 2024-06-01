@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 export default function Video(props) {
   const { users, tracks } = props;
   const [divSpacing, setdivSpacing] = useState(12);
-  console.log("usersAdded ", users);
   useEffect(() => {
     setdivSpacing(Math.max(Math.floor(12 / (users.length + 1)), 4));
   }, [users, tracks]);
@@ -27,7 +26,7 @@ export default function Video(props) {
                   
                   <AgoraVideoPlayer
                     videoTrack={user.videoTrack}
-                    className="h-[100px] w-[200px] border"
+                    className="h-[100px] w-[200px]"
                   />
                   {/* Display Student Name with student  */}
                  

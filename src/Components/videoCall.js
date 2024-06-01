@@ -191,7 +191,7 @@ export default function VideoCall(props) {
     await tracks[1].setMuted(true);
 
     tracks[1].play(`user-${uid}`);
-    await client.publish(tracks[1]);
+    await client.publish([tracks[1]]);
   };
 
   let toggleScreen = async (e) => {
@@ -219,8 +219,8 @@ export default function VideoCall(props) {
 
       //await client.publish([tracks[0], tracks[1]]);
 
-      await client.unpublish(tracks[1]);
-      await client.publish(localScreenTracks);
+      await client.unpublish([tracks[1]]);
+      await client.publish([localScreenTracks]);
 
       let videoFrames = document.getElementsByClassName("video__container");
       for (let i = 0; videoFrames.length > i; i++) {
@@ -233,7 +233,7 @@ export default function VideoCall(props) {
       sharingScreen = false;
 
       document.getElementById(`user-container-${uid}`).remove();
-      await client.unpublish(localScreenTracks);
+      await client.unpublish([localScreenTracks]);
 
       switchToCamera();
     }
@@ -268,7 +268,8 @@ export default function VideoCall(props) {
               }
               onClick={toggleScreen}
             >
-              {screenShare ? <TbScreenShare /> : <TbScreenShareOff />}
+              <TbScreenShare />
+              {/* {screenShare ?  <TbScreenShare /> : <TbScreenShareOff />} */}
             </button>
           </div>
 
@@ -319,8 +320,8 @@ export default function VideoCall(props) {
       </div>
 
       <div className="">
-        <section id="stream__container " className="text-white">
-          <div id="stream__box" className="bg-red-400"></div>
+        <section id="stream__container " className=" ">
+          <div id="stream__box" className=""></div>
           <div id="streams__container"></div>
         </section>
       </div>

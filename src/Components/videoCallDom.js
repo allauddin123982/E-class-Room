@@ -9,6 +9,7 @@ export const videoCallDom = () => {
     }
 
     displayFrame.style.display = "block";
+    displayFrame.style.width = "700px";
     displayFrame.appendChild(e.currentTarget);
     userIdInDisplayFrame = e.currentTarget.id;
 
