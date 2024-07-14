@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../firebase-config";
 import { Link, useNavigate } from "react-router-dom";
 import loginBg from "../../assets/loginBg.png";
 import { doc, setDoc } from "firebase/firestore";
+
 const SignUp = () => {
   const [values, setValues] = useState({
     email: "",
@@ -14,7 +15,18 @@ const SignUp = () => {
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const navigate = useNavigate();
 
-  
+  useEffect(() => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+      const { uid: userId, role } = JSON.parse(currentUser);
+      if (role === "student") {
+        navigate(`/studentDashboard/${userId}`);
+      } else if (role === "teacher") {
+        navigate(`/teacherDashboard/${userId}`);
+      }
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!values.email || !values.password || !values.role) {
@@ -31,11 +43,8 @@ const SignUp = () => {
     )
       .then(async (res) => {
         setSubmitButtonDisabled(false);
-        // const user = res.user;
-        // console.log({ user });
-
         await updateProfile(res.user, {
-          displayName: values.role, //set user name
+          displayName: values.role,
         });
 
         if (values.role === "student") {
@@ -43,15 +52,12 @@ const SignUp = () => {
             uid: res.user.uid,
             email: values.email,
             role: values.role,
-            // Add more fields as needed
           });
-          
         } else {
           await setDoc(doc(db, "teacherdata", res.user.uid), {
             uid: res.user.uid,
             email: values.email,
             role: values.role,
-            // Add more fields as needed
           });
         }
 

@@ -51,21 +51,20 @@ const CreateClass = () => {
   const createClass = async (e) => {
     e.preventDefault();
     try {
-      const userDocRef = doc(db, `createClass/`, className);
-
-      await setDoc(userDocRef, {
-        ...stdList,
-        // ClassTiming: classTime,
-        ClassTeacherID:id //that current Teacher who created class
+      stdList.forEach(student => {
+        student.popUp = false;
+        student.attendance = false;
       });
-
-      // Save the timer for the current class
-      // setClassTimers((prevTimers) => ({
-      //   ...prevTimers,
-      //   [classTime]: true, // You can use any value to indicate that the timer is active
-      // }));
+  
+      const userDocRef = doc(db, `createClass/`, className);
+      await setDoc(userDocRef, {
+         ...stdList,
+        ClassTeacherID: id //that current Teacher who created class
+      });
+  
+      console.log("Class created successfully");
     } catch (error) {
-      console.error(error);
+      console.error("Error creating class: ", error);
     }
   };
 

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase-config";
 import loginBg from "../../assets/loginBg.png";
+
 const LogIn = () => {
   const [values, setValues] = useState({
     email: "",
@@ -11,6 +12,18 @@ const LogIn = () => {
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+      const { uid: userId, displayName: role } = JSON.parse(currentUser);
+      if (role === "student") {
+        navigate(`/studentDashboard/${userId}`);
+      } else if (role === "teacher") {
+        navigate(`/teacherDashboard/${userId}`);
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,12 +37,16 @@ const LogIn = () => {
       .then(async (res) => {
         setSubmitButtonDisabled(false);
         const { uid: userId, displayName: role } = res.user;
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({ uid: userId, role })
+        );
         if (role === "student") {
           navigate(`/studentDashboard/${userId}`);
         } else if (role === "teacher") {
           navigate(`/teacherDashboard/${userId}`);
         } else {
-          setError(res.err.message);
+          setError("Unknown role");
         }
       })
       .catch((err) => {
@@ -86,8 +103,7 @@ const LogIn = () => {
                 className={`${
                   submitButtonDisabled ? "cursor-not-allowed" : null
                 } border p-1 bg-gray-200 hover:bg-white rounded`}
-                onClick={handleSubmit}
-                >
+              >
                 Login
               </button>
 
@@ -99,7 +115,7 @@ const LogIn = () => {
                   </button>
                 </Link>
               </div>
-                {error ? <p className="text-bold text-red-600">{error}</p> : null}
+              {error ? <p className="text-bold text-red-600">{error}</p> : null}
             </div>
           </form>
         </div>
