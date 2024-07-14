@@ -8,18 +8,6 @@
     "idd": "timeTable"
   },
   {
-    "title": "Join Class",
-    "idd": "joinClass"
-  },
-  {
-    "title": "Joined Classes",
-    "idd": "joindClasses"
-  },
-  {
-    "title": "Chat",
-    "idd": "chat"
-  },
-  {
     "title": "Manage Notes",
     "idd": "manageNotes"
   },

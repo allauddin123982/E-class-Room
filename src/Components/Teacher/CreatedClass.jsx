@@ -115,6 +115,8 @@ const CreatedClass = () => {
     setStdList(students);
   }, [classes]);
   console.log("creted classes: ", className);
+
+  //Remove students from class
   const DeleteStudents = async (id) => {
     try {
       // Loop through each class document in the createdClass object
@@ -462,11 +464,13 @@ const CreatedClass = () => {
 
     fetchTeacherData();
   }, [id]);
+
   const downloadAssignment = () => {
     setAssignmentValue(!assignmentValue);
     const modal = document.getElementById("assignmentModal");
     modal.showModal();
   };
+
   const handleModalClose = () => {
     setAssignment([]);
     document.getElementById("assignmentModal").close();
@@ -559,12 +563,13 @@ const CreatedClass = () => {
             <div className="">
               <button
                 variant="contained"
-                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
-                onClick={() => setSeeattendance(!seeAttendence)}
+                className="w-[120px] hover:cursor-pointer bg-pink-500 p-1 rounded-lg"
+                onClick={() => updatePopUpForRandomStudent()}
               >
                 Attendance
               </button>
             </div>
+
             {/* random questions */}
             <div className="">
               <button
@@ -668,16 +673,16 @@ const CreatedClass = () => {
           </table>
         ) : null}
 
-        {seeAttendence && classes && Object.keys(classes).length > 0 ? (
+        {/* {seeAttendence && classes && Object.keys(classes).length > 0 ? (
           <button
-            style={{ marginTop: "20vh" }}
+            // style={{ marginTop: "10vh" }}
             variant="contained"
             className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
             onClick={() => updatePopUpForRandomStudent()}
           >
             Attendence
           </button>
-        ) : null}
+        ) : null} */}
 
          {/* questions */}
          {seeQuestions && classes && Object.keys(classes).length > 0 ? (
