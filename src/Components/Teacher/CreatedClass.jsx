@@ -100,6 +100,11 @@ const CreatedClass = () => {
     modal.showModal();
     setClasses(createdClass[classSelected]);
   };
+  //open qstnDialog
+  const handleQstnDialog = () => {
+    const modal = document.getElementById("qstnDialog");
+    modal.showModal();
+  };
   //open model2
   const handleModelTwo = () => {
     const modal = document.getElementById("modal2");
@@ -563,7 +568,7 @@ const CreatedClass = () => {
             <div className="">
               <button
                 variant="contained"
-                className="w-[120px] hover:cursor-pointer bg-pink-500 p-1 rounded-lg"
+                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
                 onClick={() => updatePopUpForRandomStudent()}
               >
                 Attendance
@@ -575,7 +580,8 @@ const CreatedClass = () => {
               <button
                 variant="contained"
                 className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
-                onClick={() => setSeeQuestions(!seeQuestions)}
+                // onClick={() => setSeeQuestions(!seeQuestions)}
+                onClick={handleQstnDialog}
               >
                 Questions
               </button>
@@ -684,26 +690,38 @@ const CreatedClass = () => {
           </button>
         ) : null} */}
 
-         {/* questions */}
-         {seeQuestions && classes && Object.keys(classes).length > 0 ? (
-          <div style={{ marginTop: "10vh" }}>
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="w-[580px] border border-gray-300 p-2 mt-4 rounded-lg"
-              placeholder="Enter question..."
-            />
-            <br />
-            <button
-              variant="contained"
-              className="w-[180px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg mt-5"
-              onClick={() => AddQuestionForRandomStudent()}
-            >
-              Submit Question
-            </button>
-          </div>
-        ) : null}
+        {/* questions */}
+        <dialog
+          id="qstnDialog"
+          // style={{ marginTop: "10vh", marginRight: "240px" }}
+          className="bg-gray-200 p-10 rounded-md"
+        >
+          {classes && Object.keys(classes).length > 0 ? (
+            <>
+              <button
+                onClick={() => document.getElementById("qstnDialog").close()}
+                className="absolute top-0 right-0 m-2"
+              >
+                X
+              </button>
+              <input
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-[580px] border border-gray-300 p-2 mt-4 rounded-lg"
+                placeholder="Enter question..."
+              />
+              <br />
+              <button
+                variant="contained"
+                className="w-[180px] hover:cursor-pointer bg-gray-900 p-1 rounded-lg mt-5 text-white"
+                onClick={() => AddQuestionForRandomStudent()}
+              >
+                Submit Question
+              </button>
+            </>
+          ) : null}
+        </dialog>
       </dialog>
 
       {/* for scheduling class */}

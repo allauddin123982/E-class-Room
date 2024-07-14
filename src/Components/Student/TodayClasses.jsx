@@ -34,13 +34,14 @@ const TodayClasses = () => {
   const [className, setClassName] = useState("");
   const [answer, setAnswer] = useState("");
   const [question, setQuestion] = useState("");
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenQuestion, setIsOpenQuestion] = useState(false);
   const { id } = useParams();
 
   let teacherIDs = fetchClasses.map((cls) => cls.ClassTeacherID);
   teacherIDs = teacherIDs.pop();
   const assigRef = ref(storage, `thrAssignments/${classes.id}/`);
- 
+
   //openpopup
 
   const openPopup = useCallback(async () => {
@@ -49,6 +50,7 @@ const TodayClasses = () => {
     _classes.id && delete _classes.id;
     if (Object.keys(_classes).length !== 0) {
       const classArray = Object.values(_classes);
+      console.log("Helo palo ", classArray);
       // Find a student with matching ID and popUp value of true
       const matchingStudent = classArray.find(
         (item) => item.id === studentData.uid && item.popUp === true
@@ -94,7 +96,6 @@ const TodayClasses = () => {
     openQuestionPopup();
   }, [classes, openQuestionPopup, studentData]);
 
-
   //fetch classes
   useEffect(() => {
     const fetchData = async () => {
@@ -127,10 +128,10 @@ const TodayClasses = () => {
     try {
       // Construct the document reference
       const userDocRef = doc(db, `studentdata/${id}/`);
-  
+
       // Fetch the document
       const docSnapshot = await getDoc(userDocRef);
-  
+
       // Check if the document exists
       if (docSnapshot.exists()) {
         // Access the data using the data() method
@@ -144,9 +145,11 @@ const TodayClasses = () => {
       console.error("Error fetching user data:", error);
     }
   }, [id, setStudentData]);
-  
+
   useEffect(() => {
-if(!studentData?.id){fetchStudentData()}
+    if (!studentData?.id) {
+      fetchStudentData();
+    }
     fetchStudentData();
   }, [fetchStudentData, id, studentData?.id]);
 
@@ -238,8 +241,6 @@ if(!studentData?.id){fetchStudentData()}
     document.getElementById("assignmentModal").close();
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenQuestion, setIsOpenQuestion] = useState(false);
 
   const handlePresent = async () => {
     try {
@@ -276,8 +277,9 @@ if(!studentData?.id){fetchStudentData()}
 
         // Choose a random student ID from the current class
 
-        if(typeof index === "object") return console.log(`No student index found in class ${className}`)
-        
+        if (typeof index === "object")
+          return console.log(`No student index found in class ${className}`);
+
         // Update the 'popUp' field to true for the random student
         classData[index]["attendance"] = true;
         classData[index]["popUp"] = false;
@@ -285,12 +287,10 @@ if(!studentData?.id){fetchStudentData()}
         // Update the document with the modified data
         await updateDoc(classDocRef, classData);
         setIsOpen(false);
-        
+
         alert(`Marked Present random student in class ${className}`);
 
-        console.log(
-          `Marked Present random student in class ${className}`
-        );
+        console.log(`Marked Present random student in class ${className}`);
       } else {
         console.log(`Class ${className} does not exist.`);
       }
@@ -442,11 +442,11 @@ if(!studentData?.id){fetchStudentData()}
           </div>
 
           {/* {present button } */}
-          {isOpen && (
-            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg relative">
+          {!isOpen && (
+            <div className="fixed top-16 right-10">
+              <div className="bg-gray-800 text-white p-6 shadow-lg relative w-52 flex flex-col items-center">
                 <button
-                  className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-800"
+                  className="absolute top-0 right-0 m-2 text-white"
                   onClick={handleClose}
                 >
                   X
@@ -472,28 +472,30 @@ if(!studentData?.id){fetchStudentData()}
           </div>
         </div>
 
-  {/* {present button } */}
-  {isOpenQuestion && (
-          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg relative">
+        {/* {present button } */}
+        {isOpenQuestion && (
+          <div className="fixed top-72 right-8">
+            <div className="bg-gray-800 text-white p-2 relative w-[350px] flex flex-col items-center rounded-lg">
               <button
-                className="absolute top-0 right-0 m-2 text-gray-600 hover:text-gray-800"
+                className="absolute top-0 right-0 m-2 text-white"
                 onClick={handleCloseAnswer}
               >
                 X
               </button>
               <h2 className="text-xl font-semibold mb-4">Q&A</h2>
-              <p style={{ color: "red" }}>Question: {question}?</p>
-              <div className="flex justify-between">
-                <input
+              <p style={{ color: "red", fontSize: "20px" }}>
+                Question: {question}?
+              </p>
+              <div className="mt-4">
+                <textarea
                   type="text"
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  className="w-[580px] border border-gray-300 p-2 mt-4 rounded-lg"
+                  className="w-[300px] h-[150px] border border-gray-300 p-2  rounded-lg"
                   placeholder="Enter Answer..."
-                />
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                ></textarea>
+                <button 
+                  className="bg-blue-500 text-white rounded-md w-28 p-2 mt-4"
                   onClick={handleAnswer}
                 >
                   submit

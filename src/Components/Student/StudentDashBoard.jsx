@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import tabs from "../../studentTabs.json";
 import { useNavigate, useParams } from "react-router-dom";
 import TodayClasses from "./TodayClasses";
-import ClassJoin from "./ClassJoin";
-import TimeTable from "./TimeTable";
-import Chat from "./Chat";
 import StudentProfile from "./StudentProfile";
 import { signOut } from "firebase/auth";
 import { auth, db, messaging } from "../../firebase-config";
@@ -161,10 +158,6 @@ const StudentDashBoard = () => {
         {profile ? <StudentProfile /> : null}
         {titleName === "classes" && profile === false ? (
           <TodayClasses />
-        ) : titleName === "timeTable" && profile === false ? (
-          <TimeTable />
-        ) : titleName === "joinClass" && profile === false ? (
-          <ClassJoin />
         ) : titleName === "groupChat" && profile === false ? (
           <GroupChat />
         ) : titleName === "manageNotes" && profile === false ? (
