@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
 import { db, storage } from "../../firebase-config";
 import { useParams } from "react-router-dom";
 import VideoCall from "../videoCall";
@@ -12,6 +22,9 @@ const CreatedClass = () => {
   const [classes, setClasses] = useState([]);
   const [settingDate, setSettingDate] = useState(false);
   const [seeStudents, setSeeStudents] = useState(false);
+  const [seeAttendence, setSeeattendance] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [seeQuestions, setSeeQuestions] = useState(false);
   const [classTime, setClassTime] = useState("");
   const [classDate, setClassDate] = useState("");
   const [classType, setClassType] = useState("");
@@ -22,8 +35,9 @@ const CreatedClass = () => {
   const [assignmentFile, setAssignmentFile] = useState(null);
   const [assignment, setAssignment] = useState([]);
   const [assignmentValue, setAssignmentValue] = useState(false);
-  
+
   const { id } = useParams();
+  console.log("createdClass--", createdClass);
 
   let newList = stdList.map((e) => ({ id: e.id, name: e.namee }));
 
@@ -40,6 +54,23 @@ const CreatedClass = () => {
     const refInstance = ref(storage, refPath);
     assigRefs.push(refInstance);
   });
+
+  const fetchCreatedClass = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "createClass"));
+      let data = {};
+      querySnapshot.forEach((doc) => {
+        //return only those documents who matches with current teacher id
+        const docData = doc.data();
+        if (docData.ClassTeacherID === id) {
+          data[doc.id] = docData;
+        }
+      });
+      setCreatedClass(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchCreatedClass = async () => {
@@ -83,10 +114,93 @@ const CreatedClass = () => {
     const students = Object.values(classes);
     setStdList(students);
   }, [classes]);
+  console.log("creted classes: ", className);
+  const DeleteStudents = async (id) => {
+    try {
+      // Loop through each class document in the createdClass object
+      for (const className in createdClass) {
+        if (Object.hasOwnProperty.call(createdClass, className)) {
+          const classData = createdClass[className];
+          // Check if the student ID exists in the current class data
+          for (const studentId in classData) {
+            if (Object.hasOwnProperty.call(classData, studentId)) {
+              const student = classData[studentId];
+              // Check if the student's id matches the specified id
+              if (student.id === id) {
+                // Delete the student object from the class data
+                delete classData[studentId];
+                // Update the Firestore document with the modified class data
+                fetchCreatedClass();
+                await updateClassDocument(className, classData);
+                console.log("Student document deleted successfully");
+                return; // Exit the function after deleting the student document
+              }
+            }
+          }
+        }
+      }
+      console.log(`Student with ID ${id} not found in any class`);
+    } catch (error) {
+      console.error("Error deleting student document: ", error);
+    }
+  };
 
-  //Remove student from class
-  const removeStudent = async (student) => {
-    const studentIdToRemove = student.id;
+  const updatePopUpForRandomStudent = async () => {
+    debugger;
+    try {
+      // Get the document reference for the class
+      const classDocRef = doc(db, "createClass", className);
+      const classDocSnapshot = await getDoc(classDocRef);
+
+      if (classDocSnapshot.exists()) {
+        const classData = classDocSnapshot.data();
+
+        const _classes = { ...classData };
+        _classes.ClassTeacherID && delete _classes.ClassTeacherID;
+        // Get all student IDs within the current class
+        const studentIds = Object.keys(_classes);
+
+        if (studentIds.length === 0) {
+          console.log(`No students found in class ${className}`);
+          return;
+        }
+
+        // Choose a random student ID from the current class
+        const randomStudentId =
+          studentIds[Math.floor(Math.random() * studentIds.length)];
+
+        // Update the 'popUp' field to true for the random student
+        _classes[randomStudentId]["popUp"] = true;
+
+        // Update the document with the modified data
+        await updateDoc(classDocRef, _classes);
+
+        alert(
+          `popUp boolean updated to true for a random student ${classData[randomStudentId].namee} in class of ${className}`
+        );
+
+        console.log(
+          `popUp boolean updated to true for a random student in class ${className}`
+        );
+      } else {
+        console.log(`Class ${className} does not exist.`);
+      }
+    } catch (error) {
+      console.error("Error updating popUp boolean: ", error);
+    }
+  };
+
+  // Function to update the Firestore document with the modified class dat
+  const updateClassDocument = async (className, classData) => {
+    try {
+      // Construct the document reference for the class
+      const classDocRef = doc(db, "createClass", className);
+      // Update the Firestore document with the modified class data
+      await setDoc(classDocRef, classData);
+      fetchCreatedClass();
+    } catch (error) {
+      console.error("Error updating class document: ", error);
+    }
   };
 
   // Set up a global interval for checking notifications
@@ -137,6 +251,52 @@ const CreatedClass = () => {
       .toString()
       .padStart(2, "0")}`;
   }
+
+  const AddQuestionForRandomStudent = async () => {
+    debugger;
+    try {
+      // Get the document reference for the class
+      const classDocRef = doc(db, "createClass", className);
+      const classDocSnapshot = await getDoc(classDocRef);
+
+      if (classDocSnapshot.exists()) {
+        const classData = classDocSnapshot.data();
+
+        const _classes = { ...classData };
+        _classes.ClassTeacherID && delete _classes.ClassTeacherID;
+        // Get all student IDs within the current class
+        const studentIds = Object.keys(_classes);
+
+        if (studentIds.length === 0) {
+          console.log(`No students found in class ${className}`);
+          return;
+        }
+
+        // Choose a random student ID from the current class
+        const randomStudentId =
+          studentIds[Math.floor(Math.random() * studentIds.length)];
+
+        // Update the 'popUp' field to true for the random student
+        _classes[randomStudentId]["questionPopUp"] = true;
+        _classes[randomStudentId]["question"] = question;
+
+        // Update the document with the modified data
+        await updateDoc(classDocRef, _classes);
+
+        alert(
+          `Question sent to a random student ${classData[randomStudentId].namee} in class of ${className}`
+        );
+
+        console.log(
+          `popUp boolean updated to true for a random student in class ${className}`
+        );
+      } else {
+        console.log(`Class ${className} does not exist.`);
+      }
+    } catch (error) {
+      console.error("Error updating popUp boolean: ", error);
+    }
+  };
 
   // Function to send a notification to a specific student
   const sendNotificationToStudent = (student, notify) => {
@@ -260,7 +420,7 @@ const CreatedClass = () => {
         });
       });
       downloadPromises.push(listPromise);
-    });
+    }, []);
 
     // Wait for all download promises to resolve
     Promise.all(downloadPromises)
@@ -312,7 +472,6 @@ const CreatedClass = () => {
     document.getElementById("assignmentModal").close();
   };
 
-  
   return (
     <>
       {Object.keys(createdClass).length > 0 ? (
@@ -358,7 +517,6 @@ const CreatedClass = () => {
                   className="w-[150px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
                   onClick={() => {
                     setInCall(true);
-                    
                   }}
                 >
                   Start Class
@@ -396,6 +554,27 @@ const CreatedClass = () => {
                 Assignments
               </button>
             </div>
+
+            {/* random attendence */}
+            <div className="">
+              <button
+                variant="contained"
+                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={() => setSeeattendance(!seeAttendence)}
+              >
+                Attendance
+              </button>
+            </div>
+            {/* random questions */}
+            <div className="">
+              <button
+                variant="contained"
+                className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+                onClick={() => setSeeQuestions(!seeQuestions)}
+              >
+                Questions
+              </button>
+            </div>
           </div>
 
           {/* closing button */}
@@ -408,13 +587,14 @@ const CreatedClass = () => {
 
         {/* students Table */}
         {seeStudents && classes && Object.keys(classes).length > 0 ? (
-          <table className="table-auto m-5 w-[800px] border">
+          <table className="table-auto m-5 w-[1000px] border">
             <thead>
               <tr className="bg-gray-900 text-white h-14">
                 <th className=" px-4 ">-</th>
                 <th>Name</th>
                 <th>Registration</th>
                 <th>Semester</th>
+                <th>Attendence</th>
                 <th>Remove stds</th>
               </tr>
             </thead>
@@ -428,29 +608,57 @@ const CreatedClass = () => {
                 ) {
                   const user = classes[userId];
                   return (
-                    <tr
-                      key={index}
-                      className="border-b even:bg-gray-100 rounded-2xl"
-                    >
-                      <td className="p-1 flex justify-center">
-                        <p>
-                          <img
-                            src={user.img}
-                            alt="no img"
-                            className="w-12 h-12 rounded-full "
-                          />
-                        </p>
-                      </td>
-                      <td>{user.namee}</td>
-                      <td>{user.reg}</td>
-                      <td>{user.sem}</td>
-                      <td
-                        className="cursor-pointer"
-                        onClick={() => removeStudent(user)}
+                    <>
+                      <tr
+                        key={index}
+                        className="border-b even:bg-gray-100 rounded-2xl"
                       >
-                        x
-                      </td>
-                    </tr>
+                        <td className="p-1 flex justify-center">
+                          <p>
+                            <img
+                              src={user.img}
+                              alt="no img"
+                              className="w-12 h-12 rounded-full "
+                            />
+                          </p>
+                        </td>
+                        <td>{user.namee}</td>
+                        <td>{user.reg}</td>
+                        <td>{user.sem}</td>
+                        <td>
+                          {user.attendance === true ? "Present" : "Absent"}
+                        </td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => DeleteStudents(user.id)}
+                        >
+                          x
+                        </td>
+                      </tr>
+                      <br />
+                      <div
+                        style={
+                          {
+                            // display: "flex",
+                            // justifyContent: "space-between",
+                          }
+                        }
+                      >
+                        <p style={{ color: "red" }}>
+                          Question:{" "}
+                          {user.question
+                            ? user?.question
+                            : "Not Asked any question till"}
+                          ?
+                        </p>
+                        <p style={{ color: "green" }}>
+                          Answer:{" "}
+                          {user.answer && user?.questionPopUp === false
+                            ? user?.answer
+                            : "Not answered any question till"}
+                        </p>
+                      </div>
+                    </>
                   );
                 }
 
@@ -458,6 +666,38 @@ const CreatedClass = () => {
               })}
             </tbody>
           </table>
+        ) : null}
+
+        {seeAttendence && classes && Object.keys(classes).length > 0 ? (
+          <button
+            style={{ marginTop: "20vh" }}
+            variant="contained"
+            className="w-[120px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg"
+            onClick={() => updatePopUpForRandomStudent()}
+          >
+            Attendence
+          </button>
+        ) : null}
+
+         {/* questions */}
+         {seeQuestions && classes && Object.keys(classes).length > 0 ? (
+          <div style={{ marginTop: "10vh" }}>
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              className="w-[580px] border border-gray-300 p-2 mt-4 rounded-lg"
+              placeholder="Enter question..."
+            />
+            <br />
+            <button
+              variant="contained"
+              className="w-[180px] hover:cursor-pointer bg-gray-200 p-1 rounded-lg mt-5"
+              onClick={() => AddQuestionForRandomStudent()}
+            >
+              Submit Question
+            </button>
+          </div>
         ) : null}
       </dialog>
 
@@ -581,13 +821,10 @@ const CreatedClass = () => {
                 </thead>
                 <tbody>
                   {assignment.map((item, index) => (
-
                     <tr key={index} className="p-20 border">
-                    <td className="p-4 border" >{index+1}</td>
+                      <td className="p-4 border">{index + 1}</td>
                       <td className="p-4 border">
-                        <p>
-                          {`${item.removedItem}`}
-                        </p>
+                        <p>{`${item.removedItem}`}</p>
                       </td>
                       <td className="p-4 ">
                         <a
@@ -604,7 +841,9 @@ const CreatedClass = () => {
                   ))}
                 </tbody>
               </table>
-            ):<p>No Assignments</p>}
+            ) : (
+              <p>No Assignments</p>
+            )}
           </>
         </div>
       </dialog>

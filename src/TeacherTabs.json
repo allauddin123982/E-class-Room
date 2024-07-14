@@ -1,17 +1,20 @@
 [
-    {
-        "title":"Create Class",
-        "idd":"createClass"
-    },
-    {
-        "title":"Created Classes",
-        "idd":"createdClass"
-    },
-    {
-        "title":"Today Classes"
-    },
-    {
-        "title":"Chat"
-    }
-    
+  {
+    "title": "Create Class",
+    "idd": "createClass"
+  },
+  {
+    "title": "Created Classes",
+    "idd": "createdClass"
+  },
+  {
+    "title": "Today Classes"
+  },
+  {
+    "title": "Chat"
+  },
+  {
+    "title": "Group Chats",
+    "idd": "groupChat"
+  }
 ]

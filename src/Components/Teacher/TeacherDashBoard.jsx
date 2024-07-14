@@ -8,6 +8,7 @@ import CreateClass from "./CreateClass";
 import CreatedClass from "./CreatedClass";
 import { IoPersonOutline } from "react-icons/io5";
 import { FaSignOutAlt } from "react-icons/fa";
+import GroupChat from "./GroupChat";
 const TeacherDashBoard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(false);
@@ -24,14 +25,11 @@ const TeacherDashBoard = () => {
     });
   }, []);
 
-
-
   const signUserOut = async () => {
     try {
       await signOut(auth);
-      localStorage.removeItem("auth");
+      localStorage.removeItem("currentUser");
       navigate("/");
-      console.log({ auth });
     } catch (err) {
       console.error(err);
     }
@@ -96,6 +94,8 @@ const TeacherDashBoard = () => {
           <CreateClass />
         ) : titleName === "createdClass" && profile === false ? (
           <CreatedClass />
+        ) : titleName === "groupChat" && profile === false ? (
+          <GroupChat />
         ) : // ) : titleName === "joinClass" && profile === false ? (
         //   <ClassJoin />
         // ) : titleName === "joindClasses" && profile === false ? (

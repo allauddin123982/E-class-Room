@@ -12,6 +12,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { onMessage, getToken } from "firebase/messaging";
 import { FaSignOutAlt } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
+import UploadNotes from "./UploadNotes";
+import GroupChat from "./GroupChat";
 
 const StudentDashBoard = () => {
   const navigate = useNavigate();
@@ -94,7 +96,7 @@ const StudentDashBoard = () => {
   const signUserOut = async () => {
     try {
       await signOut(auth);
-      localStorage.removeItem("auth");
+      localStorage.removeItem("currentUser"); // Remove the item related to authentication
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -163,8 +165,10 @@ const StudentDashBoard = () => {
           <TimeTable />
         ) : titleName === "joinClass" && profile === false ? (
           <ClassJoin />
-        ) : titleName === "chat" && profile === false ? (
-          <Chat />
+        ) : titleName === "groupChat" && profile === false ? (
+          <GroupChat />
+        ) : titleName === "manageNotes" && profile === false ? (
+          <UploadNotes />
         ) : null}
       </div>
     </>
