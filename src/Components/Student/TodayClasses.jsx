@@ -113,7 +113,6 @@ const TodayClasses = () => {
             return student.uid === id;
           });
         });
-        // Update state with the matched classes (or an empty array if no match)
         setFetchClasses(matchingClasses);
       } catch (error) {
         console.error("Error fetching data:", error);
