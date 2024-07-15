@@ -698,7 +698,7 @@ const CreatedClass = () => {
             <div className="">
               <button
                 onClick={() => document.getElementById("qstnDialog").close()}
-                className="absolute top-0 right-0 m-2"
+                className="absolute top-0 right-0 m-2 text-white"
               >
                 X
               </button>
