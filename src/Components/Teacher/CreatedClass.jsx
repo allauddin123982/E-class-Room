@@ -37,7 +37,6 @@ const CreatedClass = () => {
   const [assignmentValue, setAssignmentValue] = useState(false);
 
   const { id } = useParams();
-  console.log("createdClass--", createdClass);
 
   let newList = stdList.map((e) => ({ id: e.id, name: e.namee }));
 
@@ -119,7 +118,6 @@ const CreatedClass = () => {
     const students = Object.values(classes);
     setStdList(students);
   }, [classes]);
-  console.log("creted classes: ", className);
 
   //Remove students from class
   const DeleteStudents = async (id) => {
@@ -260,7 +258,6 @@ const CreatedClass = () => {
   }
 
   const AddQuestionForRandomStudent = async () => {
-    debugger;
     try {
       // Get the document reference for the class
       const classDocRef = doc(db, "createClass", className);
@@ -271,6 +268,7 @@ const CreatedClass = () => {
 
         const _classes = { ...classData };
         _classes.ClassTeacherID && delete _classes.ClassTeacherID;
+        console.log("helo palo ", _classes)
         // Get all student IDs within the current class
         const studentIds = Object.keys(_classes);
 
@@ -694,23 +692,23 @@ const CreatedClass = () => {
         <dialog
           id="qstnDialog"
           // style={{ marginTop: "10vh", marginRight: "240px" }}
-          className="bg-gray-200 p-10 rounded-md"
+          className="bg-gray-600 p-6 rounded-md mb-20 mr-32"
         >
           {classes && Object.keys(classes).length > 0 ? (
-            <>
+            <div className="">
               <button
                 onClick={() => document.getElementById("qstnDialog").close()}
                 className="absolute top-0 right-0 m-2"
               >
                 X
               </button>
-              <input
+              <textarea
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                className="w-[580px] border border-gray-300 p-2 mt-4 rounded-lg"
+                className="w-[300px] h-[150px] border border-gray-300 p-2 mt-4 rounded-lg"
                 placeholder="Enter question..."
-              />
+              ></textarea>
               <br />
               <button
                 variant="contained"
@@ -719,7 +717,7 @@ const CreatedClass = () => {
               >
                 Submit Question
               </button>
-            </>
+            </div>
           ) : null}
         </dialog>
       </dialog>

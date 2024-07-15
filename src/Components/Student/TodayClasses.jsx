@@ -50,7 +50,6 @@ const TodayClasses = () => {
     _classes.id && delete _classes.id;
     if (Object.keys(_classes).length !== 0) {
       const classArray = Object.values(_classes);
-      console.log("Helo palo ", classArray);
       // Find a student with matching ID and popUp value of true
       const matchingStudent = classArray.find(
         (item) => item.id === studentData.uid && item.popUp === true
@@ -442,7 +441,7 @@ const TodayClasses = () => {
           </div>
 
           {/* {present button } */}
-          {!isOpen && (
+          {isOpen && (
             <div className="fixed top-16 right-10">
               <div className="bg-gray-800 text-white p-6 shadow-lg relative w-52 flex flex-col items-center">
                 <button
@@ -475,14 +474,14 @@ const TodayClasses = () => {
         {/* {present button } */}
         {isOpenQuestion && (
           <div className="fixed top-72 right-8">
-            <div className="bg-gray-800 text-white p-2 relative w-[350px] flex flex-col items-center rounded-lg">
+            <div className="bg-gray-800  p-2 relative w-[350px] flex flex-col items-center rounded-lg">
               <button
                 className="absolute top-0 right-0 m-2 text-white"
                 onClick={handleCloseAnswer}
               >
                 X
               </button>
-              <h2 className="text-xl font-semibold mb-4">Q&A</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">Q&A</h2>
               <p style={{ color: "red", fontSize: "20px" }}>
                 Question: {question}?
               </p>
@@ -491,7 +490,7 @@ const TodayClasses = () => {
                   type="text"
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  className="w-[300px] h-[150px] border border-gray-300 p-2  rounded-lg"
+                  className="w-[300px] h-[150px] border border-gray-300 p-2 rounded-lg"
                   placeholder="Enter Answer..."
                 ></textarea>
                 <button 
