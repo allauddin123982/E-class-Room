@@ -23,6 +23,7 @@ const StudentDashBoard = () => {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
+        console.log("trigger", user);
         setUserName(user.displayName);
       } else {
         setUserName(null);
@@ -39,13 +40,14 @@ const StudentDashBoard = () => {
   const DisplayNotification = () => {
     return (
       <div>
-        <p>Class remainder {notification.title}</p>
+        <p>Class reminder {notification.title}</p>
         <p>{notification.body}</p>
-        <p>class will start in 5m</p>
+        <p>Class will start in 5 minutes</p>
       </div>
     );
   };
-  //Function to update messaging token in Firestore
+
+  // Function to update messaging token in Firestore
   const updateMessagingTokenInFirestore = async (messagingToken) => {
     const studentDocRef = doc(db, `studentdata/${id}/`);
 
@@ -59,36 +61,39 @@ const StudentDashBoard = () => {
       const token = await getToken(messaging, {
         vapidKey:
           "BFaf75xsqzjUBEtqQH8rueELJaV2g_1zC6lxvl5WG_0FcKeEuAfXDPcDbq0Xdxqzjtqj6FTBrx_RXGgTqnp_Kt8",
-      }); // Create a notification
+      });
       // console.log("new token generated ", token);
-      //send this token to db
+      // send this token to db
       updateMessagingTokenInFirestore(token);
     } else if (permission === "denied") {
-      alert("you won't get Notification");
+      alert("You won't receive notifications");
     } else {
-      console.log("chose nothing");
+      console.log("Permission choice was not made");
     }
   }
+
   const onMessageListener = () => {
     return new Promise((resolve) => {
       onMessage(messaging, (payload) => {
-        console.log("on message payload", payload);
+        console.log("On message payload", payload);
         resolve(payload);
       });
     });
   };
 
-  requestPermission();
-  onMessageListener()
-    .then((payload) => {
-      setNotification({
-        title: payload?.notification.title,
-        body: payload?.notification.body,
+  useEffect(() => {
+    requestPermission();
+    onMessageListener()
+      .then((payload) => {
+        setNotification({
+          title: payload?.notification.title,
+          body: payload?.notification.body,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  }, []);
 
   const signUserOut = async () => {
     try {
@@ -102,15 +107,17 @@ const StudentDashBoard = () => {
 
   const handleTab = (item) => {
     setTitleName(item.idd);
+    setProfile(false); // Ensure profile is hidden when switching tabs
   };
+
   return (
     <>
-      <div className="z-[-1] header bg-gray-200 w-full h-14 flex justify-between items-center  ">
-        {userName ? (
-          <p className="ms-64 font-serif font-bold tracking-wider text-2xl">
-            {userName} Dashboard
+      <div className="header bg-gray-200 w-full h-14 flex justify-between items-center">
+        {userName && (
+          <p className="ml-64 p-12 font-serif font-bold tracking-wider text-2xl">
+            {userName.toUpperCase()} DASHBOARD
           </p>
-        ) : null}
+        )}
 
         <div
           className="flex gap-1 me-10 hover:cursor-pointer"
@@ -123,21 +130,18 @@ const StudentDashBoard = () => {
       </div>
 
       <aside
-        className="fixed top-0 left-0 z-[-1] w-64 h-screen  transition-transform -translate-x-full  border border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+        className="fixed top-0 left-0 w-64 h-screen transition-transform -translate-x-full border border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
         aria-label="Sidebar"
       >
-        <div className="h-full px-3 pb-2 overflow-y-auto bg-white ">
+        <div className="h-full px-3 pb-2 overflow-y-auto bg-white">
           <ul className="pt-16 space-y-4 font-medium text-left">
             {tabs.map((item, index) => (
               <li
                 key={index}
-                onClick={() => {
-                  handleTab(item);
-                  setProfile(false);
-                }}
+                onClick={() => handleTab(item)}
                 className="cursor-pointer"
               >
-                <p className="border-b flex items-center p-4 rounded-lg  hover:bg-gray-100 group">
+                <p className="border-b flex items-center p-4 rounded-lg hover:bg-gray-100 group">
                   <span className="ml-3">{item.title}</span>
                 </p>
               </li>
@@ -155,14 +159,15 @@ const StudentDashBoard = () => {
       </aside>
 
       <div>
-        {profile ? <StudentProfile /> : null}
-        {titleName === "classes" && profile === false ? (
-          <TodayClasses />
-        ) : titleName === "groupChat" && profile === false ? (
-          <GroupChat />
-        ) : titleName === "manageNotes" && profile === false ? (
-          <UploadNotes />
-        ) : null}
+        {profile ? (
+          <StudentProfile />
+        ) : (
+          <>
+            {titleName === "classes" && <TodayClasses />}
+            {titleName === "groupChat" && <GroupChat />}
+            {titleName === "manageNotes" && <UploadNotes />}
+          </>
+        )}
       </div>
     </>
   );
