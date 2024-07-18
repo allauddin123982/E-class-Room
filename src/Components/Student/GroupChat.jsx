@@ -34,7 +34,7 @@ const GroupChat = () => {
       );
       setFilteredGroups(filtered);
     }
-  }, [groupList, currentUser]);
+  }, []);
 
   const handleOpenChatBox = (group) => {
     setSelectedGroup(group);

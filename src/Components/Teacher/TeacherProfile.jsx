@@ -52,7 +52,7 @@ const TeacherProfile = () => {
       console.log("Object does not contain namee");
     }
   }, [userData]);
-  console.log("check teacher dataa", userData);
+  console.log("check teacher dataa",  );
   return (
     <div className="flex justify-center">
       <div

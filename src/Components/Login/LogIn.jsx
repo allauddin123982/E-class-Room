@@ -36,6 +36,7 @@ const LogIn = () => {
     signInWithEmailAndPassword(auth, values.email, values.password)
       .then(async (res) => {
         setSubmitButtonDisabled(false);
+        console.log(res);
         const { uid: userId, displayName: role } = res.user;
         localStorage.setItem(
           "currentUser",

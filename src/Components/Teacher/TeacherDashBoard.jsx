@@ -45,7 +45,7 @@ const TeacherDashBoard = () => {
       <div className="z-[-1] header bg-gray-200 w-full h-14 flex justify-between items-center">
         {userName ? (
           <p className="ms-64 font-serif font-bold tracking-wider text-2xl">
-            {userName} Dashboard
+            {userName.toUpperCase()} DASHBOARD
           </p>
         ) : null}
 

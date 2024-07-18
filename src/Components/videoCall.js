@@ -14,19 +14,25 @@ import { BsCameraVideoOffFill } from "react-icons/bs";
 import { TbScreenShare } from "react-icons/tb";
 import { TbScreenShareOff } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
+import { db } from "../firebase-config.js";
+import { doc, getDoc } from "firebase/firestore";
 import "./videoCall.css";
+import { useParams } from "react-router-dom";
+
 export default function VideoCall(props) {
-  const { setInCall } = props; //true
+  const { setInCall } = props;
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
   const [screenShare, setScreenShare] = useState(true);
   const [trackState, setTrackState] = useState({ video: true, audio: true });
-  const client = useClient(); //to connect to video call
+  const client = useClient();
+  const currentUser = localStorage.getItem("currentUser");
   let { expandVideoFrame, displayFrame, userIdInDisplayFrame } = videoCallDom();
-
+  const { id } = useParams();
   const { ready, tracks } = useMicrophoneAndCameraTracks();
   let uid = sessionStorage.getItem("uid");
+
   if (!uid) {
     uid = String(Math.floor(Math.random() * 10000));
     sessionStorage.setItem("uid", uid);
@@ -43,6 +49,29 @@ export default function VideoCall(props) {
     expandVideoFrame(e);
   };
 
+  const fetchUserName = async (userId) => {
+    try {
+      let userDocRef = doc(db, `studentdata/${userId}`);
+      let userSnapshot = await getDoc(userDocRef);
+
+      if (userSnapshot.exists()) {
+        return userSnapshot.data().namee; // Assuming 'namee' is the field in your document
+      }
+
+      userDocRef = doc(db, `teacherdata/${userId}`);
+      userSnapshot = await getDoc(userDocRef);
+
+      if (userSnapshot.exists()) {
+        return userSnapshot.data().namee; // Assuming 'namee' is the field in your document
+      }
+
+      return "Unknown User";
+    } catch (error) {
+      console.error("Error fetching user name:", error);
+      return "Unknown User";
+    }
+  };
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimer((prevTimer) => prevTimer + 1);
@@ -52,7 +81,6 @@ export default function VideoCall(props) {
     return () => clearInterval(intervalId);
   }, []);
 
-  // Convert timer value to HH:MM:SS format
   const formatTime = (time) => {
     const hours = Math.floor(time / 3600);
     const minutes = Math.floor((time % 3600) / 60);
@@ -86,12 +114,15 @@ export default function VideoCall(props) {
     };
 
     let joinStream = async () => {
+      const userName = await fetchUserName(id);
       let player = `
-  <div class="video__container" id="user-container-${uid}">
-    <div class="video-player" id="user-${uid}"></div>
-  </div>
-
-`;
+      <div>
+        <div class="video__container" id="user-container-${uid}">
+          <div class="video-player" id="user-${uid}"></div>
+        </div>
+        <div class="user-name">${userName}</div>
+      </div>
+      `;
 
       document
         .getElementById("streams__container")
@@ -106,14 +137,19 @@ export default function VideoCall(props) {
 
     let handleUserPublished = async (user, mediaType) => {
       remoteUsers[user.uid] = user;
-
       await client.subscribe(user, mediaType);
 
       let player = document.getElementById(`user-container-${user.uid}`);
       if (player === null) {
-        player = `<div class="video__container" id="user-container-${user.uid}">
-                  <div class="video-player" id="user-${user.uid}"></div>
-              </div>`;
+        const userName = await fetchUserName(id);
+        player = `
+       <div>
+        <div class="video__container" id="user-container-${user.uid}">
+       <div class="video-player" id="user-${user.uid}"></div> 
+                  </div>
+                   <div class="user-name">${userName}</div>
+                   </div>
+                 `;
 
         document
           .getElementById("streams__container")
@@ -182,9 +218,15 @@ export default function VideoCall(props) {
   };
 
   let switchToCamera = async () => {
-    let player = `<div class="video__container" id="user-container-${uid}">
+    const userName = await fetchUserName(id);
+
+    let player = `
+    <div>
+    <div class="video__container" id="user-container-${uid}">
                     <div class="video-player" id="user-${uid}"></div>
-                 </div>`;
+                 </div>
+                  <div class="user-name">${userName}</div>
+                  </div>`;
     displayFrame.insertAdjacentHTML("beforeend", player);
 
     await tracks[0].setMuted(true);
@@ -204,10 +246,13 @@ export default function VideoCall(props) {
 
       document.getElementById(`user-container-${uid}`).remove();
       displayFrame.style.display = "block";
+      const userName = await fetchUserName(id);
 
-      let player = `<div class="video__container" id="user-container-${uid}">
+      let player = `
+      <div><div class="video__container" id="user-container-${uid}">
             <div class="video-player" id="user-${uid}"></div>
-        </div>`;
+        </div>
+         <div class="user-name">${userName}</div></div>`;
 
       displayFrame.insertAdjacentHTML("beforeend", player);
       document
@@ -217,14 +262,12 @@ export default function VideoCall(props) {
       userIdInDisplayFrame = `user-container-${uid}`;
       localScreenTracks.play(`user-${uid}`);
 
-      //await client.publish([tracks[0], tracks[1]]);
-
       await client.unpublish([tracks[1]]);
       await client.publish([localScreenTracks]);
 
       let videoFrames = document.getElementsByClassName("video__container");
       for (let i = 0; videoFrames.length > i; i++) {
-        if (videoFrames[i].id != userIdInDisplayFrame) {
+        if (videoFrames[i].id !== userIdInDisplayFrame) {
           videoFrames[i].style.height = "100px";
           videoFrames[i].style.width = "100px";
         }
@@ -248,7 +291,6 @@ export default function VideoCall(props) {
     setInCall(false);
   };
 
-  // console.log("helo ", stdPropData)
   return (
     <div className="bg-gray-800 absolute top-20 left-6 rounded-xl p-2 h-[560px] w-[1150px]">
       <div className="flex gap-2 justify-between px-2">
@@ -269,7 +311,6 @@ export default function VideoCall(props) {
               onClick={toggleScreen}
             >
               <TbScreenShare />
-              {/* {screenShare ?  <TbScreenShare /> : <TbScreenShareOff />} */}
             </button>
           </div>
 

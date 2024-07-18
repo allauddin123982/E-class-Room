@@ -41,7 +41,7 @@ const UploadNotes = () => {
       try {
         const q = query(
           collection(db, "notes"),
-          //   where("uid", "==", user?.uid),
+          where("uid", "==", user.uid), // Filter notes by current user's uid
           orderBy("createdAt")
         );
 
