@@ -51,6 +51,7 @@ export default function VideoCall(props) {
 
   const fetchUserName = async (userId) => {
     try {
+      if (!userId) return;
       let userDocRef = doc(db, `studentdata/${userId}`);
       let userSnapshot = await getDoc(userDocRef);
 

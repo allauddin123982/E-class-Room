@@ -28,7 +28,6 @@ const UploadNotes = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      console.log("User state updated:", currentUser);
     });
 
     return () => unsubscribe();
@@ -42,7 +41,7 @@ const UploadNotes = () => {
         const q = query(
           collection(db, "notes"),
           where("uid", "==", user.uid), // Filter notes by current user's uid
-          orderBy("createdAt")
+          orderBy("createdAt", "desc") // Order notes by createdAt descending
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -50,7 +49,6 @@ const UploadNotes = () => {
             id: doc.id,
             ...doc.data(),
           }));
-          console.log("Fetched notes:", fetchedNotes);
           setNotesList(fetchedNotes);
         });
 
@@ -104,7 +102,6 @@ const UploadNotes = () => {
       setNotes("");
       setFile(null);
       setError("");
-      console.log("Note saved successfully");
       alert("Notes saved successfully!");
     } catch (err) {
       console.error("Error saving notes:", err);
@@ -154,7 +151,7 @@ const UploadNotes = () => {
           {error && <p className="text-red-600 mt-2">{error}</p>}
           <div className="mt-8">
             <h3 className="text-2xl font-bold mb-4">Uploaded Notes</h3>
-            {notesList?.length > 0 ? (
+            {notesList.length > 0 ? (
               notesList.map((note) => (
                 <div
                   key={note.id}
