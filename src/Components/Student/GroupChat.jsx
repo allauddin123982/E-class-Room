@@ -34,7 +34,7 @@ const GroupChat = () => {
       );
       setFilteredGroups(filtered);
     }
-  }, []);
+  }, [groupList, currentUser]); // Ensure useEffect runs when groupList or currentUser changes
 
   const handleOpenChatBox = (group) => {
     setSelectedGroup(group);
